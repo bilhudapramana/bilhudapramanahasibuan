@@ -19,7 +19,7 @@ interface TeamMember {
 }
 
 interface TechDetails {
-  repository: string
+  repository?: string
   stack: {
     frontend: string[]
     backend: string[]
