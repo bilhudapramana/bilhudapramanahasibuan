@@ -21,6 +21,22 @@ export default function Projects() {
       link: '/projects/dinodash',
       color: '#50C878',
       tags: ['Game Design', 'Education', 'Interactive']
+    },
+    {
+      title: 'BLANDT',
+      description: 'Smart Food Inventory & Meal Planning System',
+      image: '/projects/blandt.png',
+      link: '/projects/blandt',
+      color: '#FFD700',
+      tags: ['IoT', 'AI/ML', 'Sustainability']
+    },
+    {
+      title: 'POSTUREBLOOM',
+      description: 'Smart Desktop Garden for Posture Correction',
+      image: '/projects/posturebloom.png',
+      link: '/projects/posturebloom',
+      color: '#FF69B4',
+      tags: ['Computer Vision', 'IoT', 'Health Tech']
     }
   ]
 
