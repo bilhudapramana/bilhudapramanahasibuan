@@ -28,9 +28,12 @@ export default function Home() {
             />
           </motion.div>
 
-          <h1 className="text-2xl pixel-text">BILHUDA</h1>
-          <p className="text-sm">UX DESIGNER</p>
-          <p className="text-xs italic">Hello! I create user-centered experiences</p>
+          <h1 className="text-2xl pixel-text">BILHUDA PRAMANA HASIBUAN</h1>
+          <div className="space-y-1">
+            <p className="text-sm">COMPUTER SCIENCE (UI) & IT (UQ)</p>
+            <p className="text-sm font-bold">UX DESIGNER & RESEARCHER</p>
+          </div>
+          <p className="text-xs italic">Creating user-centered experiences</p>
           
           <motion.div 
             animate={{ opacity: [1, 0.5, 1] }}

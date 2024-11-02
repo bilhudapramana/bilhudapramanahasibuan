@@ -186,6 +186,28 @@ export default function About() {
     ? skills 
     : skills.filter(skill => skill.category === selectedCategory)
 
+  const sections = [
+    { key: 'bio', label: 'BIO', icon: '📝' },
+    { key: 'skills', label: 'SKILLS', icon: '💪' },
+    { key: 'achievements', label: 'ACHIEVEMENTS', icon: '🏆' },
+    { key: 'journey', label: 'JOURNEY', icon: '🎮' },
+    { key: 'experience', label: 'EXPERIENCE', icon: '💼' }
+  ].map((section) => (
+    <motion.button 
+      key={section.key}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      className={`gameboy-btn min-w-[140px] ${
+        currentSection === section.key 
+          ? 'selected-btn bg-[--gb-light] text-white scale-105' 
+          : ''
+      }`}
+      onClick={() => setCurrentSection(section.key as Section)}
+    >
+      <PixelIcon icon={section.icon} label={section.label} />
+    </motion.button>
+  ))
+
   return (
     <PageBackground pattern="animated">
       <motion.div 
@@ -217,23 +239,7 @@ export default function About() {
 
         <div className="grid gap-8">
           <nav className="flex flex-wrap gap-4 justify-center">
-            {[
-              { key: 'bio', label: 'BIO', icon: '📝' },
-              { key: 'skills', label: 'SKILLS', icon: '💪' },
-              { key: 'achievements', label: 'ACHIEVEMENTS', icon: '🏆' },
-              { key: 'journey', label: 'JOURNEY', icon: '🗺️' },
-              { key: 'experience', label: 'EXPERIENCE', icon: '💼' }
-            ].map((section) => (
-              <motion.button 
-                key={section.key}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`gameboy-btn min-w-[140px] ${currentSection === section.key ? 'bg-[--gb-light] text-[--gb-darkest]' : ''}`}
-                onClick={() => setCurrentSection(section.key as Section)}
-              >
-                <PixelIcon icon={section.icon} label={section.label} />
-              </motion.button>
-            ))}
+            {sections}
           </nav>
 
           <AnimatePresence mode="wait">

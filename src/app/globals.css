@@ -134,3 +134,15 @@ body {
          hover:bg-[--gb-light] hover:text-white
          transition-all duration-300 cursor-pointer;
 }
+
+.gameboy-btn.selected {
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.selected-btn {
+  @apply transform scale-105 shadow-lg;
+  background-color: var(--gb-light) !important;
+  color: white !important;
+  border-color: var(--gb-darkest) !important;
+  box-shadow: 0 0 10px rgba(255, 68, 68, 0.3);
+}

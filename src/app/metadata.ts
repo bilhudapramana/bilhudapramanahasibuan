@@ -1,4 +1,4 @@
 export const metadata = {
-  title: 'Bilhuda Pramana Hasibuan | UX Designer',
-  description: 'UX Design Portfolio - Creating user-centered experiences with a retro gaming twist',
+  title: 'Bilhuda P. Hasibuan | UX Designer & Researcher',
+  description: 'Double degree student in Computer Science & IT, specializing in UX Design and Research'
 } 
