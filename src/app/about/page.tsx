@@ -216,7 +216,7 @@ export default function About() {
         </motion.header>
 
         <div className="grid gap-8">
-          <nav className="flex gap-2 flex-wrap">
+          <nav className="flex flex-wrap gap-4 justify-center">
             {[
               { key: 'bio', label: 'BIO', icon: '📝' },
               { key: 'skills', label: 'SKILLS', icon: '💪' },
@@ -228,7 +228,7 @@ export default function About() {
                 key={section.key}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className={`gameboy-btn ${currentSection === section.key ? 'bg-[--gb-light] text-[--gb-darkest]' : ''}`}
+                className={`gameboy-btn min-w-[140px] ${currentSection === section.key ? 'bg-[--gb-light] text-[--gb-darkest]' : ''}`}
                 onClick={() => setCurrentSection(section.key as Section)}
               >
                 <PixelIcon icon={section.icon} label={section.label} />
