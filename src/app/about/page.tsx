@@ -21,6 +21,7 @@ interface Achievement {
   icon: string
   year: string
   color: string
+  credential?: string
 }
 
 interface JourneyStep {
@@ -48,48 +49,65 @@ export default function About() {
 
   const achievements: Achievement[] = [
     {
-      title: 'UX Design Excellence',
-      description: 'Top performer in UQ Design Program',
+      title: 'Build Wireframes and Low-Fidelity Prototypes',
+      description: 'Google UX Design Professional Certificate',
+      icon: '🎨',
+      year: '2024',
+      color: '#4285F4',
+      credential: 'OJEEB1UCJDTZ'
+    },
+    {
+      title: 'Foundations of UX Design',
+      description: 'Google UX Design Professional Certificate',
+      icon: '📚',
+      year: '2024',
+      color: '#34A853',
+      credential: 'TU4B085ACJN6'
+    },
+    {
+      title: 'UX Design Process Certificate',
+      description: 'Google UX Design Professional Certificate',
+      icon: '🎯',
+      year: '2024',
+      color: '#EA4335',
+      credential: '5BGPPBBJVQWD'
+    },
+    {
+      title: "People's Choice Award",
+      description: 'DinoDash Project Recognition',
       icon: '🏆',
       year: '2023',
-      color: '#FFD700'
+      color: '#FBBC05'
     },
     {
       title: 'Design Innovation Award',
       description: 'For Spontaneo Project',
       icon: '🌟',
-      year: '2023',
+      year: '2024',
       color: '#98FB98'
-    },
-    {
-      title: 'UX Research Publication',
-      description: 'Published in Design Journal',
-      icon: '📚',
-      year: '2022',
-      color: '#FF69B4'
     }
   ]
 
   const journey: JourneyStep[] = [
     {
-      year: '2023',
-      title: 'UX Designer at UQ',
-      description: 'Leading innovative design projects and mentoring junior designers',
-      icon: '👩‍💻',
+      year: '2023 - 2024',
+      title: 'The University of Queensland',
+      description: 'Advanced studies in UX Design and Digital Solutions',
+      icon: '🎓',
       color: '#4169E1'
     },
     {
-      year: '2022',
-      title: 'Design Research Lead',
-      description: 'Conducted user research for major educational platforms',
-      icon: '🔬',
+      year: '2020 - 2024',
+      title: 'University of Indonesia',
+      description: 'Bachelor of Computer Science',
+      icon: '💻',
       color: '#9370DB'
     },
     {
-      year: '2021',
-      title: 'UI/UX Intern',
-      description: 'Started my journey in digital product design',
-      icon: '🌱',
+      year: '2017 - 2020',
+      title: 'Al Azhar Islamic School Indonesia',
+      description: 'High School Education',
+      icon: '📚',
       color: '#3CB371'
     }
   ]
@@ -250,7 +268,80 @@ export default function About() {
                 </div>
               )}
 
-              {/* Continue with achievements and journey sections... */}
+              {currentSection === 'achievements' && (
+                <motion.div 
+                  className="grid md:grid-cols-2 gap-4"
+                  variants={{
+                    hidden: { opacity: 0 },
+                    show: { opacity: 1, transition: { staggerChildren: 0.1 } }
+                  }}
+                  initial="hidden"
+                  animate="show"
+                >
+                  {achievements.map((achievement) => (
+                    <motion.div
+                      key={achievement.title}
+                      variants={{
+                        hidden: { x: -20, opacity: 0 },
+                        show: { x: 0, opacity: 1 }
+                      }}
+                      className="gameboy-container p-4"
+                      style={{ borderColor: achievement.color }}
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-2xl">{achievement.icon}</span>
+                        <h3 className="text-lg" style={{ color: achievement.color }}>
+                          {achievement.title}
+                        </h3>
+                      </div>
+                      <p className="text-[--gb-dark] mb-2">{achievement.description}</p>
+                      <div className="flex justify-between items-center">
+                        <div className="text-sm text-[--gb-light]">{achievement.year}</div>
+                        {achievement.credential && (
+                          <div className="text-xs text-[--gb-dark]">
+                            ID: {achievement.credential}
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              )}
+
+              {currentSection === 'journey' && (
+                <motion.div 
+                  className="space-y-6"
+                  variants={{
+                    hidden: { opacity: 0 },
+                    show: { opacity: 1, transition: { staggerChildren: 0.1 } }
+                  }}
+                  initial="hidden"
+                  animate="show"
+                >
+                  {journey.map((step, index) => (
+                    <motion.div
+                      key={step.year}
+                      variants={{
+                        hidden: { x: -20, opacity: 0 },
+                        show: { x: 0, opacity: 1 }
+                      }}
+                      className="gameboy-container p-4 flex gap-4"
+                      style={{ borderColor: step.color }}
+                    >
+                      <div className="text-4xl">{step.icon}</div>
+                      <div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <h3 className="text-lg" style={{ color: step.color }}>
+                            {step.title}
+                          </h3>
+                          <span className="text-sm text-[--gb-light]">({step.year})</span>
+                        </div>
+                        <p className="text-[--gb-dark]">{step.description}</p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              )}
             </motion.div>
           </AnimatePresence>
         </div>
