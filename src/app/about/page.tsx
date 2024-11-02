@@ -6,7 +6,7 @@ import PixelIcon from '@/components/PixelIcon'
 import PageBackground from '@/components/PageBackground'
 import Image from 'next/image'
 
-type Section = 'bio' | 'skills' | 'achievements' | 'journey'
+type Section = 'bio' | 'skills' | 'achievements' | 'journey' | 'experience'
 
 interface Skill {
   name: string
@@ -27,6 +27,16 @@ interface Achievement {
 interface JourneyStep {
   year: string
   title: string
+  description: string
+  icon: string
+  color: string
+}
+
+interface Experience {
+  role: string
+  company: string
+  location: string
+  period: string
   description: string
   icon: string
   color: string
@@ -105,6 +115,72 @@ export default function About() {
     }
   ]
 
+  const experiences: Experience[] = [
+    {
+      role: 'Shift Supervisor',
+      company: "Domino's",
+      location: 'Brisbane City, Queensland, Australia',
+      period: 'Jun 2023 - Present',
+      description: 'Part-time role managing staff, ensuring workplace safety, and enhancing customer satisfaction.',
+      icon: '🏪',
+      color: '#1E90FF'
+    },
+    {
+      role: 'Chief Operating Officer',
+      company: 'PT. Ekspor Pradana Nusantara',
+      location: 'Indonesia',
+      period: 'Feb 2022 - Oct 2024',
+      description: 'Full-time leadership role focusing on export, import, and business development.',
+      icon: '👔',
+      color: '#4B0082'
+    },
+    {
+      role: 'Head of Transport and Venue',
+      company: 'COMPFEST',
+      location: 'Jakarta, Indonesia',
+      period: 'Jan 2022 - Nov 2022',
+      description: 'Led logistics for one of the largest student-hosted IT events.',
+      icon: '🚗',
+      color: '#FF6B6B'
+    },
+    {
+      role: 'Transport and Venue Staff',
+      company: 'COMPFEST',
+      location: 'Depok, West Java, Indonesia',
+      period: 'Mar 2021 - Jan 2022',
+      description: 'Supported transport and venue logistics for the event.',
+      icon: '📍',
+      color: '#FF8C00'
+    },
+    {
+      role: 'Student Mentor',
+      company: 'PMB Fasilkom UI',
+      location: 'Indonesia',
+      period: 'Jul 2021 - Mar 2022',
+      description: 'Guided new students in adapting to the university environment.',
+      icon: '👨‍🏫',
+      color: '#32CD32'
+    },
+    {
+      role: 'Staff of Sponsorship',
+      company: 'Pesta Rakyat Komputer',
+      location: 'Depok, West Java, Indonesia',
+      period: 'Jan 2021 - Mar 2022',
+      description: 'Organized and managed sponsorship activities for Fasilkom\'s largest event.',
+      icon: '💼',
+      color: '#9370DB'
+    },
+    {
+      role: 'Staff of Mentoring Division',
+      company: 'BETIS FASILKOM UI',
+      location: 'Depok, West Java, Indonesia',
+      period: 'Dec 2020 - Mar 2022',
+      description: 'Volunteered as a mentor for underprivileged students preparing for university.',
+      icon: '🎓',
+      color: '#20B2AA'
+    }
+  ]
+
   const categories = ['All', ...new Set(skills.map(skill => skill.category))]
   const filteredSkills = selectedCategory === 'All' 
     ? skills 
@@ -145,7 +221,8 @@ export default function About() {
               { key: 'bio', label: 'BIO', icon: '📝' },
               { key: 'skills', label: 'SKILLS', icon: '💪' },
               { key: 'achievements', label: 'ACHIEVEMENTS', icon: '🏆' },
-              { key: 'journey', label: 'JOURNEY', icon: '🗺️' }
+              { key: 'journey', label: 'JOURNEY', icon: '🗺️' },
+              { key: 'experience', label: 'EXPERIENCE', icon: '💼' }
             ].map((section) => (
               <motion.button 
                 key={section.key}
@@ -330,6 +407,41 @@ export default function About() {
                           <span className="text-sm text-[--gb-light]">({step.year})</span>
                         </div>
                         <p className="text-[--gb-dark]">{step.description}</p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              )}
+
+              {currentSection === 'experience' && (
+                <motion.div 
+                  className="space-y-6"
+                  variants={{
+                    hidden: { opacity: 0 },
+                    show: { opacity: 1, transition: { staggerChildren: 0.1 } }
+                  }}
+                  initial="hidden"
+                  animate="show"
+                >
+                  {experiences.map((experience, index) => (
+                    <motion.div
+                      key={experience.role}
+                      variants={{
+                        hidden: { x: -20, opacity: 0 },
+                        show: { x: 0, opacity: 1 }
+                      }}
+                      className="gameboy-container p-4 flex gap-4"
+                      style={{ borderColor: experience.color }}
+                    >
+                      <div className="text-4xl">{experience.icon}</div>
+                      <div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <h3 className="text-lg" style={{ color: experience.color }}>
+                            {experience.role}
+                          </h3>
+                          <span className="text-sm text-[--gb-light]">({experience.period})</span>
+                        </div>
+                        <p className="text-[--gb-dark]">{experience.description}</p>
                       </div>
                     </motion.div>
                   ))}
