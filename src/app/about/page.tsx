@@ -90,25 +90,18 @@ export default function About() {
 
   const journey: JourneyStep[] = [
     {
-      year: '2023 - 2024',
+      year: '2023 - Present',
       title: 'The University of Queensland',
-      description: 'Advanced studies in UX Design and Digital Solutions',
+      description: 'Bachelor of Information Technology (UX Design)',
       icon: '🎓',
       color: '#4169E1'
     },
     {
-      year: '2020 - 2024',
+      year: '2020 - Present',
       title: 'University of Indonesia',
       description: 'Bachelor of Computer Science',
       icon: '💻',
       color: '#9370DB'
-    },
-    {
-      year: '2017 - 2020',
-      title: 'Al Azhar Islamic School Indonesia',
-      description: 'High School Education',
-      icon: '📚',
-      color: '#3CB371'
     }
   ]
 
@@ -187,9 +180,9 @@ export default function About() {
                   <motion.div variants={{ hidden: { x: -20, opacity: 0 }, show: { x: 0, opacity: 1 } }}>
                     <h2 className="text-xl pixel-text text-[--gb-darkest] mb-4">About Me</h2>
                     <div className="space-y-4 text-[--gb-dark]">
-                      <p>Hi! I'm Bilhuda, a passionate UX designer at UQ.</p>
-                      <p>I transform complex challenges into intuitive solutions that delight users and drive business success.</p>
-                      <p>My approach combines creativity with user-centered methodologies to create meaningful digital experiences.</p>
+                      <p>Hi! I'm Bilhuda, a double degree student pursuing Computer Science (UI) and Information Technology with UX Design major (UQ). I combine technical expertise with design thinking to create intuitive digital experiences.</p>
+                      
+                      <p>My portfolio includes award-winning projects like Spontaneo (iOS app) and PostureBloom (health tech), showcasing my ability to bridge technical implementation with thoughtful UX design. Backed by Google UX Design certifications and hands-on experience in both development and design.</p>
                     </div>
                   </motion.div>
                   
