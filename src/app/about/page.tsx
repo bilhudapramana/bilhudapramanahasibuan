@@ -22,6 +22,7 @@ interface Achievement {
   year: string
   color: string
   credential?: string
+  logo: string
 }
 
 interface JourneyStep {
@@ -30,6 +31,7 @@ interface JourneyStep {
   description: string
   icon: string
   color: string
+  logo: string
 }
 
 interface Experience {
@@ -40,6 +42,7 @@ interface Experience {
   description: string
   icon: string
   color: string
+  logo: string
 }
 
 export default function About() {
@@ -47,137 +50,112 @@ export default function About() {
   const [selectedCategory, setSelectedCategory] = useState<string>('All')
 
   const skills: Skill[] = [
-    { name: 'UI Design', level: 90, icon: '🎨', category: 'Design' },
-    { name: 'UX Research', level: 85, icon: '🔍', category: 'Research' },
+    { name: 'UX/UI Design', level: 90, icon: '🎨', category: 'Design' },
+    { name: 'User Research', level: 85, icon: '🔍', category: 'Research' },
     { name: 'Wireframing', level: 95, icon: '✏️', category: 'Design' },
     { name: 'Prototyping', level: 88, icon: '📱', category: 'Design' },
     { name: 'Figma', level: 92, icon: '🎯', category: 'Tools' },
-    { name: 'Adobe XD', level: 85, icon: '💎', category: 'Tools' },
+    { name: 'iOS Development', level: 85, icon: '📱', category: 'Development' },
     { name: 'User Testing', level: 87, icon: '🧪', category: 'Research' },
     { name: 'Design Systems', level: 89, icon: '🏗️', category: 'Design' },
+    { name: 'Project Management', level: 88, icon: '📊', category: 'Management' },
+    { name: 'Accessibility Design', level: 90, icon: '♿', category: 'Design' }
   ]
 
   const achievements: Achievement[] = [
     {
-      title: 'Build Wireframes and Low-Fidelity Prototypes',
-      description: 'Google UX Design Professional Certificate',
-      icon: '🎨',
-      year: '2024',
+      title: 'Product Management: An Introduction',
+      description: 'IBM Professional Certificate',
+      icon: '🎯',
+      year: '2025',
       color: '#4285F4',
-      credential: 'OJEEB1UCJDTZ'
+      credential: '1YJB0BN3XC9B',
+      logo: '/ibm_logo.jpeg'
     },
     {
-      title: 'Foundations of UX Design',
-      description: 'Google UX Design Professional Certificate',
+      title: 'Google UX Design Specialization',
+      description: 'Google Professional Certificate',
       icon: '📚',
       year: '2024',
       color: '#34A853',
-      credential: 'TU4B085ACJN6'
+      credential: 'BOS3Y97NVZPI',
+      logo: '/google logo.jpeg'
     },
     {
-      title: 'UX Design Process Certificate',
-      description: 'Google UX Design Professional Certificate',
-      icon: '🎯',
+      title: 'UX Research Excellence',
+      description: 'For SPONTANEO Project - 85% Engagement Boost',
+      icon: '🏆',
       year: '2024',
       color: '#EA4335',
-      credential: '5BGPPBBJVQWD'
-    },
-    {
-      title: "People's Choice Award",
-      description: 'DinoDash Project Recognition',
-      icon: '🏆',
-      year: '2023',
-      color: '#FBBC05'
+      logo: '/university_of_queensland_logo.jpeg'
     },
     {
       title: 'Design Innovation Award',
-      description: 'For Spontaneo Project',
+      description: 'For BLANDT Project - 40% Workflow Optimization',
       icon: '🌟',
       year: '2024',
-      color: '#98FB98'
+      color: '#FBBC05',
+      logo: '/university_of_queensland_logo.jpeg'
+    },
+    {
+      title: 'Accessibility Champion',
+      description: 'WCAG 2.1 Implementation for POSTUREBLOOM',
+      icon: '♿',
+      year: '2024',
+      color: '#98FB98',
+      logo: '/university_of_queensland_logo.jpeg'
     }
   ]
 
   const journey: JourneyStep[] = [
     {
-      year: '2023 - Present',
+      year: '2023 - 2024',
       title: 'The University of Queensland',
       description: 'Bachelor of Information Technology (UX Design)',
       icon: '🎓',
-      color: '#4169E1'
+      color: '#4169E1',
+      logo: '/university_of_queensland_logo.jpeg'
     },
     {
-      year: '2020 - Present',
+      year: '2020 - 2024',
       title: 'University of Indonesia',
       description: 'Bachelor of Computer Science',
       icon: '💻',
-      color: '#9370DB'
+      color: '#9370DB',
+      logo: '/ui logo.jpeg'
     }
   ]
 
   const experiences: Experience[] = [
     {
-      role: 'Shift Supervisor',
+      role: 'Shift Team Lead',
       company: "Domino's",
       location: 'Brisbane City, Queensland, Australia',
       period: 'Jun 2023 - Present',
-      description: 'Part-time role managing staff, ensuring workplace safety, and enhancing customer satisfaction.',
+      description: 'Orchestrated seamless shift operations, managed teams, and implemented data-driven improvements. Enhanced customer satisfaction through strategic process optimization and team development.',
       icon: '🏪',
-      color: '#1E90FF'
+      color: '#1E90FF',
+      logo: "/Domino's_pizza_logo.svg.png"
     },
     {
-      role: 'Chief Operating Officer',
+      role: 'Operations and Systems Manager',
       company: 'PT. Ekspor Pradana Nusantara',
-      location: 'Indonesia',
+      location: 'Kota Bekasi, West Java, Indonesia',
       period: 'Feb 2022 - Oct 2024',
-      description: 'Full-time leadership role focusing on export, import, and business development.',
+      description: 'Led operational workflow redesign achieving 30% efficiency enhancement. Implemented user-centered methodologies in systems architecture and directed cross-functional teams in process improvement initiatives.',
       icon: '👔',
-      color: '#4B0082'
+      color: '#4B0082',
+      logo: '/ptekspor.jpeg'
     },
     {
-      role: 'Head of Transport and Venue',
+      role: 'Head of Transportation and Venue',
       company: 'COMPFEST',
       location: 'Jakarta, Indonesia',
       period: 'Jan 2022 - Nov 2022',
-      description: 'Led logistics for one of the largest student-hosted IT events.',
+      description: 'Managed logistics for Indonesia\'s largest student-run IT festival with 8,500+ attendees. Spearheaded transport and venue operations, coordinated 50+ team members, and implemented strategic workflows reducing downtime by 25%.',
       icon: '🚗',
-      color: '#FF6B6B'
-    },
-    {
-      role: 'Transport and Venue Staff',
-      company: 'COMPFEST',
-      location: 'Depok, West Java, Indonesia',
-      period: 'Mar 2021 - Jan 2022',
-      description: 'Supported transport and venue logistics for the event.',
-      icon: '📍',
-      color: '#FF8C00'
-    },
-    {
-      role: 'Student Mentor',
-      company: 'PMB Fasilkom UI',
-      location: 'Indonesia',
-      period: 'Jul 2021 - Mar 2022',
-      description: 'Guided new students in adapting to the university environment.',
-      icon: '👨‍🏫',
-      color: '#32CD32'
-    },
-    {
-      role: 'Staff of Sponsorship',
-      company: 'Pesta Rakyat Komputer',
-      location: 'Depok, West Java, Indonesia',
-      period: 'Jan 2021 - Mar 2022',
-      description: 'Organized and managed sponsorship activities for Fasilkom\'s largest event.',
-      icon: '💼',
-      color: '#9370DB'
-    },
-    {
-      role: 'Staff of Mentoring Division',
-      company: 'BETIS FASILKOM UI',
-      location: 'Depok, West Java, Indonesia',
-      period: 'Dec 2020 - Mar 2022',
-      description: 'Volunteered as a mentor for underprivileged students preparing for university.',
-      icon: '🎓',
-      color: '#20B2AA'
+      color: '#FF6B6B',
+      logo: '/compfest_logo.jpeg'
     }
   ]
 
@@ -365,6 +343,14 @@ export default function About() {
                       style={{ borderColor: achievement.color }}
                     >
                       <div className="flex items-center gap-2 mb-2">
+                        <Image
+                          src={achievement.logo}
+                          alt={`${achievement.title} logo`}
+                          width={40}
+                          height={40}
+                          className="rounded-full object-contain p-1"
+                          style={{ backgroundColor: 'white' }}
+                        />
                         <span className="text-2xl">{achievement.icon}</span>
                         <h3 className="text-lg" style={{ color: achievement.color }}>
                           {achievement.title}
@@ -404,7 +390,14 @@ export default function About() {
                       className="gameboy-container p-4 flex gap-4"
                       style={{ borderColor: step.color }}
                     >
-                      <div className="text-4xl">{step.icon}</div>
+                      <Image
+                        src={step.logo}
+                        alt={`${step.title} logo`}
+                        width={60}
+                        height={60}
+                        className="rounded-full object-contain p-1"
+                        style={{ backgroundColor: 'white' }}
+                      />
                       <div>
                         <div className="flex items-center gap-2 mb-2">
                           <h3 className="text-lg" style={{ color: step.color }}>
@@ -439,7 +432,14 @@ export default function About() {
                       className="gameboy-container p-4 flex gap-4"
                       style={{ borderColor: experience.color }}
                     >
-                      <div className="text-4xl">{experience.icon}</div>
+                      <Image
+                        src={experience.logo}
+                        alt={`${experience.company} logo`}
+                        width={60}
+                        height={60}
+                        className="rounded-full object-contain p-1"
+                        style={{ backgroundColor: 'white' }}
+                      />
                       <div>
                         <div className="flex items-center gap-2 mb-2">
                           <h3 className="text-lg" style={{ color: experience.color }}>
