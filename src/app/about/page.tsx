@@ -222,7 +222,7 @@ export default function About() {
         >
           <div className="flex items-center gap-4 mb-4">
             <Image
-              src="/profile.jpg"
+              src="/Avatar.png"
               alt="Profile"
               width={80}
               height={80}
