@@ -25,12 +25,6 @@ export default function Blandt() {
       "E-ink Display",
       "Wireless Communication"
     ],
-    images: [
-      "/projects/blandt/hero.png",
-      "/projects/blandt/dashboard.png",
-      "/projects/blandt/shopping.png",
-      "/projects/blandt/system.png"
-    ],
     color: "#4CAF50",
     features: [
       {

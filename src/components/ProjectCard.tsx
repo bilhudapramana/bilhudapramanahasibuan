@@ -1,12 +1,10 @@
 'use client'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import Image from 'next/image'
 
 interface ProjectCardProps {
   title: string
   description: string
-  image: string
   link: string
   color: string
   tags: string[]
@@ -15,7 +13,6 @@ interface ProjectCardProps {
 export default function ProjectCard({ 
   title, 
   description, 
-  image, 
   link, 
   color,
   tags 
@@ -28,15 +25,43 @@ export default function ProjectCard({
       >
         <div className="flex flex-col md:flex-row gap-6">
           <motion.div 
-            className="w-full md:w-1/3 relative h-[200px]"
+            className="w-full md:w-1/3 relative h-[200px] flex items-center justify-center"
             whileHover={{ scale: 1.05 }}
           >
-            <Image
-              src={image}
-              alt={title}
-              fill
-              className="object-cover rounded-lg"
-            />
+            <div className="w-full h-full flex items-center justify-center">
+              <motion.div
+                className="w-24 h-24 rounded-full"
+                style={{ backgroundColor: `${color}20` }}
+                animate={{
+                  scale: [1, 1.2, 1],
+                  rotate: [0, 180, 360],
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              >
+                <div className="w-full h-full flex items-center justify-center">
+                  <motion.span
+                    className="text-4xl"
+                    animate={{
+                      scale: [1, 1.2, 1],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    {tags[0] === 'UX Design' ? '🎨' : 
+                     tags[0] === 'Game Design' ? '🎮' : 
+                     tags[0] === 'IoT' ? '🌐' : 
+                     tags[0] === 'AI/ML' ? '🤖' : '💡'}
+                  </motion.span>
+                </div>
+              </motion.div>
+            </div>
           </motion.div>
           
           <div className="w-full md:w-2/3">

@@ -22,12 +22,6 @@ export default function PostureBloom() {
       "3D Printing",
       "IoT"
     ],
-    images: [
-      "/projects/posturebloom/hero.png",
-      "/projects/posturebloom/system.png",
-      "/projects/posturebloom/interface.png",
-      "/projects/posturebloom/prototype.png"
-    ],
     color: "#4CAF50",
     features: [
       {

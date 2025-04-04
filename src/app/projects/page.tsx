@@ -9,7 +9,6 @@ export default function Projects() {
     {
       title: 'SPONTANEO',
       description: 'Event Planning & Decision Making App',
-      image: '/projects/spontaneo.png',
       link: '/projects/spontaneo',
       color: '#4A90E2',
       tags: ['UX Design', 'Mobile App', 'User Research']
@@ -17,7 +16,6 @@ export default function Projects() {
     {
       title: 'DINODASH',
       description: 'Gamified Learning Experience Platform',
-      image: '/projects/dinodash.png',
       link: '/projects/dinodash',
       color: '#50C878',
       tags: ['Game Design', 'Education', 'Interactive']
@@ -25,7 +23,6 @@ export default function Projects() {
     {
       title: 'BLANDT',
       description: 'Smart Food Inventory & Meal Planning System',
-      image: '/projects/blandt.png',
       link: '/projects/blandt',
       color: '#FFD700',
       tags: ['IoT', 'AI/ML', 'Sustainability']
@@ -33,7 +30,6 @@ export default function Projects() {
     {
       title: 'POSTUREBLOOM',
       description: 'Smart Desktop Garden for Posture Correction',
-      image: '/projects/posturebloom.png',
       link: '/projects/posturebloom',
       color: '#FF69B4',
       tags: ['Computer Vision', 'IoT', 'Health Tech']

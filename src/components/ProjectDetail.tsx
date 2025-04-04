@@ -35,7 +35,6 @@ interface ProjectDetailProps {
   solution: string
   impact: string[]
   technologies: string[]
-  images: string[]
   color: string
   features: Feature[]
   team?: TeamMember[]
@@ -50,7 +49,6 @@ export default function ProjectDetail({
   solution,
   impact,
   technologies,
-  images,
   color,
   features,
   team,
@@ -126,11 +124,20 @@ export default function ProjectDetail({
                 {description}
               </motion.p>
             </div>
-            <div className="absolute inset-0 opacity-10" style={{ 
-              backgroundImage: `url(${images[0]})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center'
-            }} />
+            <motion.div 
+              className="absolute inset-0 opacity-10"
+              animate={{
+                background: [
+                  `linear-gradient(45deg, ${color}20, ${color}40)`,
+                  `linear-gradient(45deg, ${color}40, ${color}20)`,
+                ],
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                repeatType: "reverse",
+              }}
+            />
           </motion.header>
 
           {/* Features Grid */}
@@ -145,7 +152,20 @@ export default function ProjectDetail({
                 whileHover={{ y: -5 }}
                 style={{ borderColor: color }}
               >
-                <span className="text-4xl mb-4 block floating-icon">{feature.icon}</span>
+                <motion.span 
+                  className="text-4xl mb-4 block"
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    rotate: [0, 10, -10, 0],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    repeatType: "reverse",
+                  }}
+                >
+                  {feature.icon}
+                </motion.span>
                 <h3 className="text-xl pixel-text mb-2" style={{ color }}>
                   {feature.title}
                 </h3>
@@ -169,7 +189,20 @@ export default function ProjectDetail({
                 whileHover={{ scale: 1.02 }}
                 style={{ borderColor: color }}
               >
-                <span className="text-3xl mb-4 block">{section.icon}</span>
+                <motion.span 
+                  className="text-3xl mb-4 block"
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    rotate: [0, 5, -5, 0],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    repeatType: "reverse",
+                  }}
+                >
+                  {section.icon}
+                </motion.span>
                 <h2 className="text-2xl pixel-text mb-4" style={{ color }}>
                   {section.title}
                 </h2>
@@ -185,7 +218,20 @@ export default function ProjectDetail({
               className="gameboy-container"
               style={{ borderColor: color }}
             >
-              <span className="text-3xl mb-4 block">📈</span>
+              <motion.span 
+                className="text-3xl mb-4 block"
+                animate={{
+                  scale: [1, 1.2, 1],
+                  rotate: [0, 5, -5, 0],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                }}
+              >
+                📈
+              </motion.span>
               <h2 className="text-2xl pixel-text mb-4" style={{ color }}>
                 Impact
               </h2>
@@ -198,7 +244,20 @@ export default function ProjectDetail({
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: index * 0.1 }}
                   >
-                    <span className="text-xl" style={{ color }}>→</span>
+                    <motion.span 
+                      className="text-xl"
+                      style={{ color }}
+                      animate={{
+                        x: [0, 5, 0],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        repeatType: "reverse",
+                      }}
+                    >
+                      →
+                    </motion.span>
                     <span>{item}</span>
                   </motion.li>
                 ))}
@@ -210,7 +269,20 @@ export default function ProjectDetail({
               className="gameboy-container"
               style={{ borderColor: color }}
             >
-              <span className="text-3xl mb-4 block">🛠️</span>
+              <motion.span 
+                className="text-3xl mb-4 block"
+                animate={{
+                  scale: [1, 1.2, 1],
+                  rotate: [0, 5, -5, 0],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                }}
+              >
+                🛠️
+              </motion.span>
               <h2 className="text-2xl pixel-text mb-4" style={{ color }}>
                 Technologies
               </h2>
@@ -225,6 +297,14 @@ export default function ProjectDetail({
                       border: `2px solid ${color}`
                     }}
                     whileHover={{ scale: 1.1 }}
+                    animate={{
+                      y: [0, -5, 0],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      repeatType: "reverse",
+                    }}
                   >
                     {tech}
                   </motion.span>
@@ -240,7 +320,20 @@ export default function ProjectDetail({
               variants={itemVariants}
               style={{ borderColor: color }}
             >
-              <span className="text-3xl mb-4 block">👥</span>
+              <motion.span 
+                className="text-3xl mb-4 block"
+                animate={{
+                  scale: [1, 1.2, 1],
+                  rotate: [0, 5, -5, 0],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                }}
+              >
+                👥
+              </motion.span>
               <h2 className="text-2xl pixel-text mb-6" style={{ color }}>
                 Team
               </h2>
@@ -267,26 +360,6 @@ export default function ProjectDetail({
             </motion.section>
           )}
 
-          {/* Image Gallery */}
-          <motion.section variants={itemVariants} className="space-y-8">
-            {images.map((image, index) => (
-              <motion.div
-                key={index}
-                className="relative h-[500px] rounded-lg overflow-hidden gameboy-container"
-                variants={itemVariants}
-                whileHover={{ scale: 1.02 }}
-                style={{ borderColor: color }}
-              >
-                <Image
-                  src={image}
-                  alt={`${title} screenshot ${index + 1}`}
-                  fill
-                  className="object-cover"
-                />
-              </motion.div>
-            ))}
-          </motion.section>
-
           {/* Vision Statement (if available) */}
           {vision && (
             <motion.section 
@@ -294,7 +367,20 @@ export default function ProjectDetail({
               variants={itemVariants}
               style={{ borderColor: color }}
             >
-              <span className="text-3xl mb-4 block">🚀</span>
+              <motion.span 
+                className="text-3xl mb-4 block"
+                animate={{
+                  scale: [1, 1.2, 1],
+                  rotate: [0, 5, -5, 0],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                }}
+              >
+                🚀
+              </motion.span>
               <h2 className="text-2xl pixel-text mb-4" style={{ color }}>
                 Vision
               </h2>

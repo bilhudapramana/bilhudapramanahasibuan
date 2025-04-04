@@ -21,12 +21,6 @@ export default function DinoDash() {
       "Educational Psychology",
       "3D Modeling"
     ],
-    images: [
-      "/projects/dinodash/hero.png",
-      "/projects/dinodash/gameplay.png",
-      "/projects/dinodash/levels.png",
-      "/projects/dinodash/results.png"
-    ],
     color: "#98FB98",
     features: [
       {

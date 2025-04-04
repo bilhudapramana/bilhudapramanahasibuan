@@ -22,12 +22,6 @@ export default function Spontaneo() {
       "iOS Development",
       "watchOS Development"
     ],
-    images: [
-      "/projects/spontaneo/hero.png",
-      "/projects/spontaneo/flow.png",
-      "/projects/spontaneo/wireframes.png",
-      "/projects/spontaneo/final.png"
-    ],
     color: "#FFD700",
     features: [
       {
