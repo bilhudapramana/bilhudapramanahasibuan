@@ -70,7 +70,7 @@ export default function Home() {
               whileTap={{ scale: 0.95 }}
             >
               <a 
-                href="https://www.linkedin.com/in/bilhuda-hasibuan-3556441b9/"
+                href="https://www.linkedin.com/in/bilhuda-hasibuan/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="gameboy-btn w-full flex items-center justify-center gap-2 bg-[#0077B5] hover:bg-[#006396]"

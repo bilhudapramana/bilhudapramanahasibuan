@@ -6,7 +6,7 @@ import PageBackground from '@/components/PageBackground'
 const socialLinks = [
   {
     platform: 'LinkedIn',
-    url: 'https://www.linkedin.com/in/bilhuda-hasibuan-3556441b9/',
+    url: 'https://www.linkedin.com/in/bilhuda-hasibuan/',
     icon: '💼',
     color: '#0077B5',
     username: 'Bilhuda Hasibuan'
