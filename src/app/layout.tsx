@@ -10,9 +10,9 @@ const spaceMono = Space_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Bilhuda Pramana — Gameverse Architect',
+  title: 'Bilhuda Pramana Hasibuan — UX Designer & Systems Strategist',
   description:
-    'Step into the neon playground of Bilhuda Pramana — a game designer crafting cinematic sci-fi racers, co-op raids and unforgettable player journeys.'
+    'Experience the portfolio of Bilhuda Pramana Hasibuan, a UX designer blending computer science, service design and operational excellence to deliver inclusive, measurable outcomes.'
 }
 
 export default function RootLayout({
@@ -21,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${spaceMono.variable}`}>
+    <html lang="en" className={`${spaceMono.variable}`} suppressHydrationWarning>
       <body className={`${inter.className} antialiased`}>
         <div className="min-h-screen">{children}</div>
       </body>
