@@ -10,9 +10,9 @@ const spaceMono = Space_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Bilhuda Pramana — Experience Architect',
+  title: 'Bilhuda Pramana — Gameverse Architect',
   description:
-    'Portfolio of Bilhuda Pramana, a UX designer crafting flagship digital experiences with emotion, rigor and measurable impact.'
+    'Step into the neon playground of Bilhuda Pramana — a game designer crafting cinematic sci-fi racers, co-op raids and unforgettable player journeys.'
 }
 
 export default function RootLayout({
