@@ -3,110 +3,110 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 
-const WORDS = ['Designer', 'Thinker', 'Creator', 'Developer', 'UX Expert']
+const WORDS = ['Game Designer', 'World Builder', 'System Alchemist', 'Combat Scripter', 'Lore Weaver']
 
 const NAV_ITEMS = [
-  { label: 'Work', href: '#work' },
-  { label: 'Experience', href: '#about' },
-  { label: 'Kind Words', href: '#testimonials' },
+  { label: 'Games', href: '#games' },
+  { label: 'Quest Log', href: '#experience' },
+  { label: 'Player Chatter', href: '#community' },
   { label: 'Contact', href: '#contact' }
 ]
 
 const PROJECTS = [
   {
     id: 1,
-    title: 'E-commerce Flagship',
+    title: 'NEON DRIFT: HYPERLANE',
     description:
-      'Reimagined the purchase journey for a luxury fashion house with spatial storytelling and seamless motion micro-interactions.',
-    role: 'Lead Product Designer',
+      'Arcade roguelite racer set inside a synthwave metropolis. Procedural highways, reactive soundtrack and co-op rivalries keep the flow electric.',
+    role: 'Game Director & Systems Designer',
     year: '2024',
-    impact: '+28% conversion',
-    tags: ['Design Systems', 'Motion Language', 'A/B Testing'],
-    accent: 'linear-gradient(135deg, rgba(255,214,94,0.65), rgba(255,120,87,0.35))'
+    impact: '3.2M pilots',
+    tags: ['UE5', 'Procedural Tracks', 'Online Co-op'],
+    accent: 'linear-gradient(135deg, rgba(255,72,173,0.7), rgba(72,209,255,0.4))'
   },
   {
     id: 2,
-    title: 'Holistic Healthcare',
+    title: 'ASTRAL HAVEN',
     description:
-      'Crafted a calm and confident experience for a preventive-care platform balancing clinical data with human warmth.',
-    role: 'Principal UX Designer',
+      'Cozy sci-farm colony with day-night raids. Blend of tactile farming loops, base defense tactics and heartwarming NPC storylines.',
+    role: 'Creative Producer',
     year: '2023',
-    impact: '+41 NPS',
-    tags: ['Design Research', 'Accessibility', 'Service Blueprint'],
-    accent: 'linear-gradient(135deg, rgba(123,224,255,0.5), rgba(67,104,255,0.45))'
+    impact: '97% player sentiment',
+    tags: ['Hybrid Casual', 'Live Ops', 'Narrative Tools'],
+    accent: 'linear-gradient(135deg, rgba(135,255,158,0.45), rgba(44,232,224,0.45))'
   },
   {
     id: 3,
-    title: 'Financial Command Center',
+    title: 'CHROMA RAID',
     description:
-      'Designed a multi-device portfolio dashboard with adaptive density, cinematic transitions and real-time collaboration tools.',
-    role: 'Information Architecture',
+      'Stylized four-player heist set across dimension-shifting museums. Rhythm combat meets puzzle stealth with streamer-friendly tools.',
+    role: 'Multiplayer Experience Lead',
     year: '2023',
-    impact: 'x2 engagement',
-    tags: ['Data Visualization', 'Design Ops', 'Realtime Systems'],
-    accent: 'linear-gradient(135deg, rgba(168,255,120,0.45), rgba(46,196,182,0.45))'
+    impact: 'Top 5 on Twitch',
+    tags: ['Crossplay', 'Spectator Mode', 'Anti-Tilt UX'],
+    accent: 'linear-gradient(135deg, rgba(255,180,84,0.5), rgba(255,94,247,0.4))'
   },
   {
     id: 4,
-    title: 'Intelligent Mobility',
+    title: 'VOIDSONG: ECLIPSE',
     description:
-      'Built an intuitive companion app for electric vehicles with predictive routing, ambient gestures and adaptive audio cues.',
-    role: 'Experience Lead',
+      'Narrative rhythm shooter where spells are composed live. Features adaptive AI enemies and player-driven soundtrack remixes.',
+    role: 'Experience Architect',
     year: '2022',
-    impact: '-36% support tickets',
-    tags: ['Product Strategy', 'Voice & Gesture', 'Edge Cases'],
-    accent: 'linear-gradient(135deg, rgba(255,140,222,0.45), rgba(98,0,234,0.45))'
+    impact: 'Game Awards finalist',
+    tags: ['Music Systems', 'Accessibility', 'Haptics'],
+    accent: 'linear-gradient(135deg, rgba(112,123,255,0.55), rgba(255,105,120,0.4))'
   }
 ]
 
 const STATS = [
   {
-    id: 'experience',
-    value: '6+',
-    label: 'Years crafting flagship products',
-    description: 'From e-commerce to healthcare, leading end-to-end experience strategy.'
+    id: 'players',
+    value: '15M+',
+    label: 'Players traversed',
+    description: 'Across neon racers, cosmic raids and cozy life-sims with bite.'
   },
   {
-    id: 'launches',
-    value: '35',
-    label: 'High-impact launches',
-    description: 'Shipped experiences shaped around measurable outcomes and delight.'
+    id: 'prototypes',
+    value: '120',
+    label: 'Playable prototypes',
+    description: 'Rapid-fire experiments to nail feel, balance and UI readability.'
   },
   {
-    id: 'impact',
-    value: '120M+',
-    label: 'Users influenced',
-    description: 'Designing responsibly at scale for global, multi-platform ecosystems.'
+    id: 'ops',
+    value: '48h',
+    label: 'Average patch turnaround',
+    description: 'Live ops rituals keep every world balanced and buzzing.'
   }
 ]
 
 const EXPERIENCES = [
   {
     id: 1,
-    company: 'Nusantara Commerce',
-    role: 'Lead UX Designer',
+    company: 'Nebula Forge Studios',
+    role: 'Creative Director',
     period: '2022 — Present',
     summary:
-      'Guiding a multi-disciplinary product team to craft elevated retail journeys across Southeast Asia.',
-    focus: ['Design Strategy', 'Systems Thinking', 'Motion Direction']
+      'Leading a strike team shipping multiplatform co-op epics with Unreal Engine 5, bespoke tooling and a relentless playtest cadence.',
+    focus: ['UE5', 'Live Ops', 'Cinematic UX']
   },
   {
     id: 2,
-    company: 'Halo Health',
-    role: 'Senior Product Designer',
+    company: 'Solar Arcade Collective',
+    role: 'Lead Systems Designer',
     period: '2019 — 2022',
     summary:
-      'Built trust-driven patient experiences and unified clinician tooling with rigorous accessibility standards.',
-    focus: ['Inclusive Design', 'Service Design', 'Research Ops']
+      'Balanced economy loops and combat flows for award-winning indie hits while co-directing community tournament programs.',
+    focus: ['Systems Design', 'Multiplayer', 'Analytics']
   },
   {
     id: 3,
-    company: 'Freelance',
-    role: 'Experience Consultant',
-    period: '2017 — 2019',
+    company: 'Freelance Raids',
+    role: 'Prototype Mercenary',
+    period: '2016 — 2019',
     summary:
-      'Partnered with visionary founders to transform complex problems into signature product moments.',
-    focus: ['Brand Experience', 'Rapid Prototyping', 'Product Discovery']
+      'Partnered with dreamers to turn napkin sketches into jaw-dropping vertical slices that closed funding rounds.',
+    focus: ['Rapid Prototyping', 'Level Design', 'Unity']
   }
 ]
 
@@ -114,23 +114,23 @@ const TESTIMONIALS = [
   {
     id: 1,
     quote:
-      'Bilhuda brings an enviable calm to complex projects. Every interaction feels choreographed yet effortless for our customers.',
-    name: 'Amelia Hart',
-    title: 'VP of Product, Luminara'
+      'Bilhuda turned our scribbles into a living, breathing world. Every update lands like a community event and our players feel seen.',
+    name: 'Nova Liang',
+    title: 'CEO, Nebula Forge'
   },
   {
     id: 2,
     quote:
-      'A rare blend of systems thinking and poetic craft. Our flagship launch finally feels worthy of the brand we imagined.',
-    name: 'Kenji Nakamura',
-    title: 'Founder, Oru Mobility'
+      'The combat feel went from clunky to legendary in two sprints. Bilhuda is the raid leader every studio wants steering the ship.',
+    name: 'Rex Morales',
+    title: 'Game Director, Solar Arcade'
   },
   {
     id: 3,
     quote:
-      'From research to rollout, Bilhuda orchestrated the experience with empathy, precision and a sharp eye for detail.',
-    name: 'Sasha Patel',
-    title: 'Chief Experience Officer, Halo Health'
+      'Their prototypes are basically magic tricks — players gasp, investors lean in and suddenly we have a roadmap that sings.',
+    name: 'Ivy Loren',
+    title: 'Producer, Indie Megabooth'
   }
 ]
 
@@ -138,26 +138,26 @@ const FLOATING_ORBS = [
   {
     id: 1,
     size: 420,
-    top: '10%',
-    left: '8%',
+    top: '8%',
+    left: '6%',
     background:
-      'radial-gradient(circle at 30% 30%, rgba(255,214,94,0.55), transparent 60%)'
+      'radial-gradient(circle at 30% 30%, rgba(255,64,172,0.6), transparent 65%)'
   },
   {
     id: 2,
-    size: 520,
-    top: '55%',
-    left: '70%',
+    size: 560,
+    top: '52%',
+    left: '72%',
     background:
-      'radial-gradient(circle at 70% 40%, rgba(120,208,255,0.45), transparent 65%)'
+      'radial-gradient(circle at 70% 40%, rgba(60,245,255,0.5), transparent 68%)'
   },
   {
     id: 3,
-    size: 360,
-    top: '75%',
-    left: '15%',
+    size: 380,
+    top: '78%',
+    left: '18%',
     background:
-      'radial-gradient(circle at 50% 50%, rgba(255,140,222,0.45), transparent 60%)'
+      'radial-gradient(circle at 50% 50%, rgba(158,118,255,0.5), transparent 62%)'
   }
 ]
 
@@ -316,13 +316,13 @@ export default function Home() {
             href="#top"
             className="font-mono text-xs tracking-[0.3em] uppercase"
             whileHover={{ x: 4 }}
-            onMouseEnter={() => setCursorLabel('Home')}
+            onMouseEnter={() => setCursorLabel('Spawn point')}
             onMouseLeave={resetCursor}
           >
             Bilhuda
           </motion.a>
           <span className="nav-divider" />
-          <span className="text-xs uppercase opacity-60">Experience Architecture</span>
+          <span className="text-xs uppercase opacity-60">Gameverse Architect</span>
         </div>
         <div className="hidden md:flex items-center gap-8">
           {NAV_ITEMS.map((item) => (
@@ -344,17 +344,17 @@ export default function Home() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.96 }}
             onClick={toggleAboutModal}
-            onMouseEnter={() => setCursorLabel('About')}
+            onMouseEnter={() => setCursorLabel('Lore Terminal')}
             onMouseLeave={resetCursor}
           >
-            About
+            Lore
           </motion.button>
           <motion.button
             className="icon-button"
             onClick={() => setIsDarkMode((prev) => !prev)}
             whileHover={{ rotate: 10 }}
             whileTap={{ scale: 0.95 }}
-            onMouseEnter={() => setCursorLabel(isDarkMode ? 'Light' : 'Dark')}
+            onMouseEnter={() => setCursorLabel(isDarkMode ? 'Daycycle' : 'Nightcycle')}
             onMouseLeave={resetCursor}
             aria-label="Toggle theme"
           >
@@ -412,13 +412,16 @@ export default function Home() {
                 transition={{ delay: 0.2, duration: 0.6, ease: 'easeOut' }}
               >
                 <span className="badge-dot" />
-                Designing for emotion and clarity
+                Engineering neon-drenched adventures
               </motion.span>
               <motion.h1
                 className="text-6xl md:text-7xl xl:text-8xl font-bold leading-tight gradient-text"
                 style={{ transform: `translateY(${refinedScroll * -14}px)` }}
               >
                 BILHUDA PRAMANA
+                <span className="block text-2xl md:text-3xl font-normal tracking-[0.4em] mt-4">
+                  GAMEVERSE MODE
+                </span>
               </motion.h1>
               <motion.p
                 className="text-xl md:text-2xl max-w-2xl leading-relaxed text-muted"
@@ -426,30 +429,30 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4, duration: 0.6, ease: 'easeOut' }}
               >
-                A UX <span className="word-morph">{WORDS[currentWordIndex]}</span> crafting holistic
-                ecosystems where technology disappears and the story takes center stage. Every
-                pixel, gesture and transition is considered for resonance.
+                A game <span className="word-morph">{WORDS[currentWordIndex]}</span> forging universes
+                where combat feels buttery, UI stays legible at warp speed and communities feel at
+                home. Every particle, sound cue and difficulty spike is tuned for maximum hype.
               </motion.p>
               <div className="flex flex-wrap gap-4">
                 <motion.a
-                  href="#work"
+                  href="#games"
                   className="cta-button"
                   whileHover={{ scale: 1.05, y: -4 }}
                   whileTap={{ scale: 0.96 }}
-                  onMouseEnter={() => setCursorLabel('Explore work')}
+                  onMouseEnter={() => setCursorLabel('Enter game vault')}
                   onMouseLeave={resetCursor}
                 >
-                  Explore the work
+                  Launch the worlds
                 </motion.a>
                 <motion.a
                   href="mailto:hello@bilhuda.com"
                   className="ghost-button"
                   whileHover={{ scale: 1.05, y: -4 }}
                   whileTap={{ scale: 0.96 }}
-                  onMouseEnter={() => setCursorLabel('Email me')}
+                  onMouseEnter={() => setCursorLabel('Send transmission')}
                   onMouseLeave={resetCursor}
                 >
-                  Start a project
+                  Drop a transmission
                 </motion.a>
               </div>
               <div className="grid gap-6 md:grid-cols-3">
@@ -481,17 +484,17 @@ export default function Home() {
               <div className="hero-grid" aria-hidden />
               <div className="relative space-y-8">
                 <div className="flex items-center justify-between">
-                  <p className="text-xs uppercase tracking-[0.4em] text-muted">Signature process</p>
+                  <p className="text-xs uppercase tracking-[0.4em] text-muted">Build pipeline</p>
                   <motion.span
                     className="accent-pill"
                     animate={{ opacity: [0.4, 1, 0.4] }}
                     transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
                   >
-                    Always evolving
+                    Patch 1.72 live
                   </motion.span>
                 </div>
                 <div className="space-y-5">
-                  {['Discover', 'Define', 'Design', 'Deliver'].map((step, index) => (
+                  {['Concept', 'Prototype', 'Playtest', 'Live Ops'].map((step, index) => (
                     <motion.div
                       key={step}
                       className="process-row"
@@ -513,12 +516,12 @@ export default function Home() {
                   <div className="insight-card">
                     <p className="text-xs uppercase tracking-[0.4em] text-muted">Currently</p>
                     <p className="text-base font-medium">
-                      Designing next-gen retail at <span className="highlight-text">Nusantara</span>
+                      Directing co-op chaos at <span className="highlight-text">Nebula Forge</span>
                     </p>
                   </div>
                   <div className="insight-card">
                     <p className="text-xs uppercase tracking-[0.4em] text-muted">Availability</p>
-                    <p className="text-base font-medium">Open for select collaborations</p>
+                    <p className="text-base font-medium">Accepting legendary party invites</p>
                   </div>
                 </div>
               </div>
@@ -527,7 +530,7 @@ export default function Home() {
         </motion.section>
 
         <motion.section
-          id="work"
+          id="games"
           className="container mx-auto px-4 space-y-12"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -535,11 +538,11 @@ export default function Home() {
           transition={{ duration: 0.7, ease: 'easeOut' }}
         >
           <div className="section-heading">
-            <span className="section-eyebrow">Selected Work</span>
-            <h2 className="section-title">Flagship experiences crafted with intention</h2>
+            <span className="section-eyebrow">Featured Worlds</span>
+            <h2 className="section-title">Playtested experiences built for pure adrenaline</h2>
             <p className="section-description">
-              A collection of multidisciplinary stories where research, design systems and
-              motion converge to create signature product moments.
+              Each release blends cinematic spectacle with systems depth — crafted for teams,
+              streamers and solo explorers chasing a new obsession.
             </p>
           </div>
           <div className="grid gap-10 xl:grid-cols-2">
@@ -554,7 +557,7 @@ export default function Home() {
                 whileHover={{ y: -12, rotateX: 2, rotateY: -2 }}
                 onMouseEnter={() => {
                   setHoveredProject(project.id)
-                  setCursorLabel('View project')
+                  setCursorLabel('Inspect game')
                 }}
                 onMouseLeave={() => {
                   setHoveredProject(null)
@@ -577,7 +580,7 @@ export default function Home() {
                 <p className="project-description">{project.description}</p>
                 <div className="project-meta">
                   <span>{project.role}</span>
-                  <span>Experience leadership</span>
+                  <span>Party lead</span>
                 </div>
                 <div className="flex flex-wrap gap-3 pt-6">
                   {project.tags.map((tag) => (
@@ -598,7 +601,7 @@ export default function Home() {
         </motion.section>
 
         <motion.section
-          id="about"
+          id="experience"
           className="container mx-auto px-4 space-y-12"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -606,11 +609,11 @@ export default function Home() {
           transition={{ duration: 0.7, ease: 'easeOut' }}
         >
           <div className="section-heading">
-            <span className="section-eyebrow">Experience</span>
-            <h2 className="section-title">Designing with empathy, rigor and poetry</h2>
+            <span className="section-eyebrow">Quest Log</span>
+            <h2 className="section-title">Leading squads through cinematic development cycles</h2>
             <p className="section-description">
-              A journey across industries shaping teams, systems and rituals that keep humans at
-              the heart of ambitious products.
+              From indie dream teams to AAA strike forces, I bridge creative chaos and live ops
+              discipline to keep every release humming.
             </p>
           </div>
           <div className="timeline">
@@ -645,7 +648,7 @@ export default function Home() {
         </motion.section>
 
         <motion.section
-          id="testimonials"
+          id="community"
           className="container mx-auto px-4 space-y-12"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -653,11 +656,11 @@ export default function Home() {
           transition={{ duration: 0.7, ease: 'easeOut' }}
         >
           <div className="section-heading">
-            <span className="section-eyebrow">Kind Words</span>
-            <h2 className="section-title">What partners feel working together</h2>
+            <span className="section-eyebrow">Player Chatter</span>
+            <h2 className="section-title">Voices from the guilds and production floors</h2>
             <p className="section-description">
-              Partnerships rooted in trust, clarity and momentum. Here is how collaborators
-              describe the journey.
+              Developers, community leads and players reflecting on the raids, the sprints and the
+              unforgettable launch nights we shared.
             </p>
           </div>
           <div className="grid gap-6 md:grid-cols-3">
@@ -693,15 +696,15 @@ export default function Home() {
           <motion.div
             className="cta-card glass-panel"
             whileHover={{ scale: 1.01 }}
-            onMouseEnter={() => setCursorLabel('Collaborate')}
+            onMouseEnter={() => setCursorLabel('Open comms')}
             onMouseLeave={resetCursor}
           >
             <div className="space-y-6">
-              <span className="section-eyebrow">Let’s build the future</span>
-              <h2 className="section-title">Ready to craft a flagship experience together?</h2>
+              <span className="section-eyebrow">Open comms channel</span>
+              <h2 className="section-title">Assemble the next legendary drop together?</h2>
               <p className="section-description">
-                I partner with teams who value craft, measurable impact and long-term product
-                health. Let’s orchestrate the next chapter of your product.
+                Bring me your wildest mechanics, lore fragments or community dreams. I thrive on
+                co-piloting teams who crave spectacle, retention and heart.
               </p>
             </div>
             <div className="flex flex-col gap-4 md:items-end">
@@ -710,13 +713,13 @@ export default function Home() {
                 className="cta-button"
                 whileHover={{ scale: 1.05, y: -4 }}
                 whileTap={{ scale: 0.96 }}
-                onMouseEnter={() => setCursorLabel('Email me')}
+                onMouseEnter={() => setCursorLabel('Send transmission')}
                 onMouseLeave={resetCursor}
               >
                 hello@bilhuda.com
               </motion.a>
               <div className="flex gap-4">
-                {['LinkedIn', 'Twitter', 'Read.cv'].map((item) => (
+                {['Discord', 'Twitch', 'Itch.io'].map((item) => (
                   <motion.a
                     key={item}
                     href="#"
@@ -734,7 +737,7 @@ export default function Home() {
         </motion.section>
 
         <footer className="container mx-auto px-4 text-sm text-muted text-center pt-12">
-          © {new Date().getFullYear()} Bilhuda Pramana. Crafted with intention.
+          © {new Date().getFullYear()} Bilhuda Pramana. Respawned nightly in the gameverse.
         </footer>
       </main>
 
@@ -755,23 +758,27 @@ export default function Home() {
             >
               <div className="flex items-start justify-between gap-6">
                 <div className="space-y-4">
-                  <h2 className="text-3xl font-semibold">More about Bilhuda</h2>
+                  <h2 className="text-3xl font-semibold">Lore drop: Bilhuda</h2>
                   <p className="text-base leading-relaxed text-muted">
-                    I am a UX designer obsessed with the invisible choreography of great products.
-                    Psychology, sound design and architecture influence how I craft emotion into
-                    every interaction. Beyond the pixels, I facilitate rituals that keep teams
-                    aligned, curious and kind.
+                    I sculpt neon worlds that feel alive — from cinematic racers to lo-fi cozy
+                    sims. Years of systems design, animation tinkering and community rituals help
+                    me ship experiences that feel like Saturday-night raids with friends.
                   </p>
                   <p className="text-base leading-relaxed text-muted">
-                    Outside of design you will find me sketching cityscapes, collecting iconic
-                    chairs and exploring volcanic trails across Indonesia.
+                    When AFK I mod classic JRPGs, record ambient synth jams and host playtest
+                    nights in Jakarta’s indie arcade scene.
                   </p>
                   <div className="modal-skills">
-                    {['UX Design', 'Design Strategy', 'Motion Direction', 'Research Ops', 'Figma', 'Prototyping'].map(
-                      (skill) => (
-                        <span key={skill}>{skill}</span>
-                      )
-                    )}
+                    {[
+                      'Game Direction',
+                      'Combat Design',
+                      'Live Ops',
+                      'Sound Scripting',
+                      'Shader Art',
+                      'Community Rituals'
+                    ].map((skill) => (
+                      <span key={skill}>{skill}</span>
+                    ))}
                   </div>
                 </div>
                 <motion.button
@@ -779,9 +786,9 @@ export default function Home() {
                   onClick={toggleAboutModal}
                   whileHover={{ rotate: 90 }}
                   whileTap={{ scale: 0.9 }}
-                  onMouseEnter={() => setCursorLabel('Close')}
+                  onMouseEnter={() => setCursorLabel('Seal portal')}
                   onMouseLeave={resetCursor}
-                  aria-label="Close modal"
+                  aria-label="Close portal"
                 >
                   ×
                 </motion.button>
@@ -806,13 +813,13 @@ export default function Home() {
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
           >
-            <span className="text-xs uppercase tracking-[0.4em] opacity-60">Impact</span>
+            <span className="text-xs uppercase tracking-[0.4em] opacity-60">Hype meter</span>
             <p className="text-sm font-semibold">{activeProject.impact}</p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <div className="keyboard-hint">Press Ctrl+D for dark mode · Ctrl+A for the story</div>
+      <div className="keyboard-hint">Press Ctrl+D for nightcycle · Ctrl+A for the lore drop</div>
     </>
   )
 }
