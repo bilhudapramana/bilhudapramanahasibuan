@@ -1,825 +1,532 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 
-const WORDS = ['Game Designer', 'World Builder', 'System Alchemist', 'Combat Scripter', 'Lore Weaver']
-
-const NAV_ITEMS = [
-  { label: 'Games', href: '#games' },
-  { label: 'Quest Log', href: '#experience' },
-  { label: 'Player Chatter', href: '#community' },
-  { label: 'Contact', href: '#contact' }
+const navItems = [
+  { label: 'Overview', target: 'overview' },
+  { label: 'Experience', target: 'experience' },
+  { label: 'Projects', target: 'projects' },
+  { label: 'Credentials', target: 'credentials' },
+  { label: 'Contact', target: 'contact' }
 ]
 
-const PROJECTS = [
+const heroHighlights = [
   {
-    id: 1,
-    title: 'NEON DRIFT: HYPERLANE',
+    label: 'SPONTANEO',
+    value: '85% engagement lift',
     description:
-      'Arcade roguelite racer set inside a synthwave metropolis. Procedural highways, reactive soundtrack and co-op rivalries keep the flow electric.',
-    role: 'Game Director & Systems Designer',
-    year: '2024',
-    impact: '3.2M pilots',
-    tags: ['UE5', 'Procedural Tracks', 'Online Co-op'],
-    accent: 'linear-gradient(135deg, rgba(255,72,173,0.7), rgba(72,209,255,0.4))'
+      'Led UX research, iOS delivery and WCAG 2.1 accessibility to energise student communities.'
   },
   {
-    id: 2,
-    title: 'ASTRAL HAVEN',
+    label: 'BLANDT',
+    value: '40% faster workflows',
     description:
-      'Cozy sci-farm colony with day-night raids. Blend of tactile farming loops, base defense tactics and heartwarming NPC storylines.',
-    role: 'Creative Producer',
-    year: '2023',
-    impact: '97% player sentiment',
-    tags: ['Hybrid Casual', 'Live Ops', 'Narrative Tools'],
-    accent: 'linear-gradient(135deg, rgba(135,255,158,0.45), rgba(44,232,224,0.45))'
+      'Architected design systems and competitive analysis to streamline cross-functional launches.'
   },
   {
-    id: 3,
-    title: 'CHROMA RAID',
+    label: 'POSTUREBLOOM',
+    value: '60% drop-off reduction',
     description:
-      'Stylized four-player heist set across dimension-shifting museums. Rhythm combat meets puzzle stealth with streamer-friendly tools.',
-    role: 'Multiplayer Experience Lead',
-    year: '2023',
-    impact: 'Top 5 on Twitch',
-    tags: ['Crossplay', 'Spectator Mode', 'Anti-Tilt UX'],
-    accent: 'linear-gradient(135deg, rgba(255,180,84,0.5), rgba(255,94,247,0.4))'
+      'Shaped onboarding and data visualisations for an accessibility-first IoT wellbeing experience.'
   },
   {
-    id: 4,
-    title: 'VOIDSONG: ECLIPSE',
+    label: 'GREENCLINIC',
+    value: '50% quicker navigation',
     description:
-      'Narrative rhythm shooter where spells are composed live. Features adaptive AI enemies and player-driven soundtrack remixes.',
-    role: 'Experience Architect',
-    year: '2022',
-    impact: 'Game Awards finalist',
-    tags: ['Music Systems', 'Accessibility', 'Haptics'],
-    accent: 'linear-gradient(135deg, rgba(112,123,255,0.55), rgba(255,105,120,0.4))'
+      'Crafted calming UI and personalised insights to support Australian university students.'
   }
 ]
 
-const STATS = [
+const experiences = [
   {
-    id: 'players',
-    value: '15M+',
-    label: 'Players traversed',
-    description: 'Across neon racers, cosmic raids and cozy life-sims with bite.'
-  },
-  {
-    id: 'prototypes',
-    value: '120',
-    label: 'Playable prototypes',
-    description: 'Rapid-fire experiments to nail feel, balance and UI readability.'
-  },
-  {
-    id: 'ops',
-    value: '48h',
-    label: 'Average patch turnaround',
-    description: 'Live ops rituals keep every world balanced and buzzing.'
-  }
-]
-
-const EXPERIENCES = [
-  {
-    id: 1,
-    company: 'Nebula Forge Studios',
-    role: 'Creative Director',
-    period: '2022 — Present',
+    company: "Domino's",
+    role: 'Shift Team Lead',
+    period: 'Jun 2023 – Present',
+    location: 'Brisbane City, Queensland, Australia',
     summary:
-      'Leading a strike team shipping multiplatform co-op epics with Unreal Engine 5, bespoke tooling and a relentless playtest cadence.',
-    focus: ['UE5', 'Live Ops', 'Cinematic UX']
+      'Guided a dynamic store team to exceed service standards with precision scheduling, real-time coaching and human-centred customer support.',
+    highlights: [
+      'Resolved complex customer scenarios with empathy, bolstering loyalty and repeat business.',
+      'Maintained rigorous quality control and cash integrity while optimising inventory through just-in-time ordering.',
+      'Mentored new hires on safety, hospitality rituals and growth pathways to elevate team performance.'
+    ]
   },
   {
-    id: 2,
-    company: 'Solar Arcade Collective',
-    role: 'Lead Systems Designer',
-    period: '2019 — 2022',
+    company: 'PT. Ekspor Pradana Nusantara',
+    role: 'Operations & Systems Manager',
+    period: 'Feb 2022 – Oct 2024',
+    location: 'Kota Bekasi, West Java, Indonesia',
     summary:
-      'Balanced economy loops and combat flows for award-winning indie hits while co-directing community tournament programs.',
-    focus: ['Systems Design', 'Multiplayer', 'Analytics']
+      'Redesigned export operations with data-driven rituals, connecting ground staff, IT teams and leadership around a shared visibility stack.',
+    highlights: [
+      'Delivered a 30% efficiency gain across logistics timelines through workflow orchestration and continuous feedback loops.',
+      'Integrated human-centred methodologies into internal tooling, unlocking reliable infrastructure and productivity lift.',
+      'Championed digital transformation initiatives and cross-department mentorship to scale sustainable growth.'
+    ]
   },
   {
-    id: 3,
-    company: 'Freelance Raids',
-    role: 'Prototype Mercenary',
-    period: '2016 — 2019',
+    company: 'COMPFEST',
+    role: 'Head of Transportation & Venue',
+    period: 'Jan 2022 – Nov 2022',
+    location: 'Jakarta, Indonesia',
     summary:
-      'Partnered with dreamers to turn napkin sketches into jaw-dropping vertical slices that closed funding rounds.',
-    focus: ['Rapid Prototyping', 'Level Design', 'Unity']
+      'Engineered end-to-end mobility and venue systems for Indonesia’s largest student-run IT festival welcoming 8,500+ attendees.',
+    highlights: [
+      'Coordinated 50+ volunteers and vendors with adaptive resource allocation and rapid risk mitigation.',
+      'Introduced data-informed routing, digital tracking and contingency playbooks to cut downtime by 25%.',
+      'Activated immersive venue narratives that amplified participant experience and speaker readiness.'
+    ]
   }
 ]
 
-const TESTIMONIALS = [
+const projects = [
   {
-    id: 1,
-    quote:
-      'Bilhuda turned our scribbles into a living, breathing world. Every update lands like a community event and our players feel seen.',
-    name: 'Nova Liang',
-    title: 'CEO, Nebula Forge'
+    name: 'SPONTANEO',
+    discipline: 'Lead UX Designer & iOS Developer',
+    outcome: '85% engagement lift · 92% satisfaction',
+    description:
+      'Mobilised deep user interviews, journey mapping and multivariate testing to transform spontaneous campus hangouts into a seamless digital ritual.',
+    focus: ['Advanced user research', 'Accessibility orchestration', 'iOS prototyping']
   },
   {
-    id: 2,
-    quote:
-      'The combat feel went from clunky to legendary in two sprints. Bilhuda is the raid leader every studio wants steering the ship.',
-    name: 'Rex Morales',
-    title: 'Game Director, Solar Arcade'
+    name: 'BLANDT',
+    discipline: 'UX Researcher & UI Designer',
+    outcome: '40% faster workflows · 65% UX metric uplift',
+    description:
+      'Built a scalable component library and streamlined creative-to-production handoffs with strategic competitive analysis.',
+    focus: ['Design systems architecture', 'Operational playbooks', 'Insight synthesis']
   },
   {
-    id: 3,
-    quote:
-      'Their prototypes are basically magic tricks — players gasp, investors lean in and suddenly we have a roadmap that sings.',
-    name: 'Ivy Loren',
-    title: 'Producer, Indie Megabooth'
+    name: 'POSTUREBLOOM',
+    discipline: 'Product Designer & UX Lead',
+    outcome: '60% drop-off reduction',
+    description:
+      'Delivered an accessibility-first IoT interface that humanises posture coaching through contextual inquiry and adaptive visualisations.',
+    focus: ['Inclusive onboarding', 'Data storytelling', 'IoT service design']
+  },
+  {
+    name: 'GREENCLINIC',
+    discipline: 'UI/UX Designer',
+    outcome: '50% faster navigation',
+    description:
+      'Composed a calming mental health companion with mood tracking, responsive prototypes and student co-design labs.',
+    focus: ['Wellbeing journeys', 'Figma craft', 'Usability testing']
   }
 ]
 
-const FLOATING_ORBS = [
+const education = [
   {
-    id: 1,
-    size: 420,
-    top: '8%',
-    left: '6%',
-    background:
-      'radial-gradient(circle at 30% 30%, rgba(255,64,172,0.6), transparent 65%)'
+    school: 'The University of Queensland',
+    programme: 'Bachelor of Information Technology — User Experience Design',
+    period: 'Feb 2023 – Nov 2024',
+    details:
+      'Studio-led UX specialisation with emphasis on Figma craftsmanship, Python, React and agile delivery across interdisciplinary teams.'
   },
   {
-    id: 2,
-    size: 560,
-    top: '52%',
-    left: '72%',
-    background:
-      'radial-gradient(circle at 70% 40%, rgba(60,245,255,0.5), transparent 68%)'
-  },
-  {
-    id: 3,
-    size: 380,
-    top: '78%',
-    left: '18%',
-    background:
-      'radial-gradient(circle at 50% 50%, rgba(158,118,255,0.5), transparent 62%)'
+    school: 'University of Indonesia',
+    programme: 'Bachelor of Computer Science',
+    period: '2020 – 2024',
+    details:
+      'Solid computing fundamentals powering data visualisation, cross-functional collaboration and scalable problem solving.'
   }
 ]
+
+const certifications = [
+  {
+    issuer: 'IBM',
+    name: 'Product Management: An Introduction',
+    issued: 'Jan 2025',
+    credentialId: '1YJB0BN3XC9B'
+  },
+  {
+    issuer: 'Google',
+    name: 'Google UX Design Specialization',
+    issued: 'Dec 2024',
+    credentialId: 'BOS3Y97NVZPI'
+  }
+]
+
+const openRoles = [
+  'UX Designer',
+  'UX Consultant',
+  'UX Researcher',
+  'Customer Service Representative',
+  'Customer Service Specialist'
+]
+
+const signatureSkills = [
+  'Experience strategy',
+  'Mixed-method research',
+  'Design systems',
+  'Service design',
+  'Operational analytics',
+  'Cross-functional facilitation'
+]
+
+const contactChannels = [
+  { label: 'Email', href: 'mailto:hello@bilhuda.com' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/bilhuda-hasibuan' }
+]
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 32 },
+  visible: { opacity: 1, y: 0 }
+}
+
+const staggerChildren = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.15,
+      delayChildren: 0.05
+    }
+  }
+}
 
 export default function Home() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
-  const [scrollProgress, setScrollProgress] = useState(0)
-  const [hoveredProject, setHoveredProject] = useState<number | null>(null)
-  const [isDarkMode, setIsDarkMode] = useState(false)
-  const [showAboutModal, setShowAboutModal] = useState(false)
-  const [cursorText, setCursorText] = useState('')
-  const [cursorVariant, setCursorVariant] = useState<'default' | 'text'>('default')
-  const [trailPositions, setTrailPositions] = useState<Array<{ x: number; y: number }>>([])
-  const [currentWordIndex, setCurrentWordIndex] = useState(0)
-
-  useEffect(() => {
-    const updateMousePosition = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
-
-      setTrailPositions((prev) => {
-        const newPositions = [...prev, { x: e.clientX, y: e.clientY }]
-        if (newPositions.length > 12) {
-          return newPositions.slice(newPositions.length - 12)
-        }
-        return newPositions
-      })
-    }
-
-    const updateScrollProgress = () => {
-      const scrollPx = document.documentElement.scrollTop
-      const winHeightPx =
-        document.documentElement.scrollHeight - document.documentElement.clientHeight
-      const scrolled = winHeightPx > 0 ? (scrollPx / winHeightPx) * 100 : 0
-      setScrollProgress(scrolled)
-    }
-
-    const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.key === 'd' && e.ctrlKey) {
-        e.preventDefault()
-        setIsDarkMode((prev) => !prev)
-      }
-      if (e.key === 'a' && e.ctrlKey) {
-        e.preventDefault()
-        setShowAboutModal((prev) => !prev)
-      }
-    }
-
-    window.addEventListener('mousemove', updateMousePosition)
-    window.addEventListener('scroll', updateScrollProgress)
-    window.addEventListener('keydown', handleKeyPress)
-
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark-mode')
-    } else {
-      document.documentElement.classList.remove('dark-mode')
-    }
-
-    return () => {
-      window.removeEventListener('mousemove', updateMousePosition)
-      window.removeEventListener('scroll', updateScrollProgress)
-      window.removeEventListener('keydown', handleKeyPress)
-    }
-  }, [isDarkMode])
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentWordIndex((prev) => (prev + 1) % WORDS.length)
-    }, 2500)
-
-    return () => clearInterval(interval)
-  }, [])
-
-  const refinedScroll = scrollProgress / 100
-  const activeProject = hoveredProject
-    ? PROJECTS.find((project) => project.id === hoveredProject) ?? null
-    : null
-
-  const setCursorLabel = (label: string) => {
-    setCursorText(label)
-    setCursorVariant('text')
-  }
-
-  const resetCursor = () => {
-    setCursorText('')
-    setCursorVariant('default')
-  }
-
-  const toggleAboutModal = () => setShowAboutModal((prev) => !prev)
-
   return (
-    <>
-      <div
-        className="cursor-dot"
-        style={{ left: `${mousePosition.x}px`, top: `${mousePosition.y}px` }}
-      />
-      <div
-        className="cursor-outline"
-        style={{
-          left: `${mousePosition.x - 18}px`,
-          top: `${mousePosition.y - 18}px`,
-          transform: `scale(${cursorVariant === 'text' ? 1.6 : 1})`
-        }}
-      >
-        {cursorVariant === 'text' && <span className="cursor-text">{cursorText}</span>}
-      </div>
+    <div className="relative isolate min-h-screen overflow-hidden bg-[#020617] text-slate-100">
+      <div className="pointer-events-none absolute -top-40 left-1/2 h-[38rem] w-[38rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,_rgba(59,130,246,0.28),_transparent_70%)] blur-3xl" />
+      <div className="pointer-events-none absolute top-40 -left-32 h-[34rem] w-[34rem] rounded-full bg-[radial-gradient(circle_at_center,_rgba(251,191,36,0.2),_transparent_72%)] blur-3xl" />
+      <div className="pointer-events-none absolute bottom-[-18rem] right-[-12rem] h-[40rem] w-[40rem] rounded-full bg-[radial-gradient(circle_at_center,_rgba(244,114,182,0.22),_transparent_70%)] blur-3xl" />
+      <div className="pointer-events-none absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'160\' height=\'160\' viewBox=\'0 0 160 160\'%3E%3Crect width=\'160\' height=\'160\' fill=\'%2300000014\'/%3E%3C/svg%3E')] opacity-[0.15]" />
 
-      {trailPositions.map((pos, index) => (
-        <motion.div
-          key={`${pos.x}-${pos.y}-${index}`}
-          className="cursor-trail"
-          initial={{ scale: 0.8, opacity: 0.9, x: pos.x, y: pos.y }}
-          animate={{
-            scale: 0,
-            opacity: 0,
-            x: pos.x,
-            y: pos.y
-          }}
-          transition={{ duration: 0.6, delay: index * 0.02 }}
-        />
-      ))}
-
-      <div className="scroll-progress">
-        <div className="scroll-progress-bar" style={{ width: `${scrollProgress}%` }} />
-      </div>
-
-      <div className="aurora" style={{ transform: `translateY(${refinedScroll * -40}px)` }} />
-      <div className="noise-overlay" />
-
-      {FLOATING_ORBS.map((orb, index) => (
-        <motion.div
-          key={orb.id}
-          className="floating-orb"
-          style={{
-            width: orb.size,
-            height: orb.size,
-            top: orb.top,
-            left: orb.left,
-            background: orb.background
-          }}
-          animate={{
-            x: [0, index % 2 === 0 ? 18 : -18, 0],
-            y: [0, index % 2 === 0 ? -24 : 24, 0]
-          }}
-          transition={{ duration: 12 + index * 2, repeat: Infinity, ease: 'easeInOut' }}
-        />
-      ))}
-
-      <motion.nav
-        className="primary-nav glass-panel"
-        initial={{ opacity: 0, y: -12 }}
-        animate={{ opacity: 1, y: 0 }}
-        style={{ y: refinedScroll * -20 }}
-        transition={{ duration: 0.8, ease: 'easeOut' }}
-      >
-        <div className="flex items-center gap-3">
+      <header className="sticky top-0 z-30 border-b border-white/10 bg-[#030818]/70 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-5">
+          <div className="flex items-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100/10 text-sm font-semibold text-slate-200">
+              BP
+            </span>
+            <div>
+              <p className="text-xs uppercase tracking-[0.4em] text-slate-400">Portfolio</p>
+              <p className="text-base font-semibold text-slate-100">Bilhuda Pramana Hasibuan</p>
+            </div>
+          </div>
+          <nav className="hidden items-center gap-8 text-sm font-medium text-slate-300 md:flex">
+            {navItems.map((item) => (
+              <motion.a
+                key={item.target}
+                href={`#${item.target}`}
+                className="transition hover:text-sky-200"
+                whileHover={{ y: -3 }}
+              >
+                {item.label}
+              </motion.a>
+            ))}
+          </nav>
           <motion.a
-            href="#top"
-            className="font-mono text-xs tracking-[0.3em] uppercase"
-            whileHover={{ x: 4 }}
-            onMouseEnter={() => setCursorLabel('Spawn point')}
-            onMouseLeave={resetCursor}
+            href="#contact"
+            className="hidden rounded-full bg-sky-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-sky-400 md:inline-flex"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
-            Bilhuda
+            Collaborate
           </motion.a>
-          <span className="nav-divider" />
-          <span className="text-xs uppercase opacity-60">Gameverse Architect</span>
-        </div>
-        <div className="hidden md:flex items-center gap-8">
-          {NAV_ITEMS.map((item) => (
-            <motion.a
-              key={item.href}
-              href={item.href}
-              className="text-sm font-mono uppercase tracking-[0.2em] nav-link"
-              whileHover={{ y: -4 }}
-              onMouseEnter={() => setCursorLabel(item.label)}
-              onMouseLeave={resetCursor}
-            >
-              {item.label}
-            </motion.a>
-          ))}
-        </div>
-        <div className="flex items-center gap-4">
-          <motion.button
-            className="pill-button"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.96 }}
-            onClick={toggleAboutModal}
-            onMouseEnter={() => setCursorLabel('Lore Terminal')}
-            onMouseLeave={resetCursor}
+          <button
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-slate-300 md:hidden"
+            aria-label="Jump to navigation"
+            onClick={() => {
+              const menu = document.getElementById('site-navigation')
+              menu?.scrollIntoView({ behavior: 'smooth' })
+            }}
           >
-            Lore
-          </motion.button>
-          <motion.button
-            className="icon-button"
-            onClick={() => setIsDarkMode((prev) => !prev)}
-            whileHover={{ rotate: 10 }}
-            whileTap={{ scale: 0.95 }}
-            onMouseEnter={() => setCursorLabel(isDarkMode ? 'Daycycle' : 'Nightcycle')}
-            onMouseLeave={resetCursor}
-            aria-label="Toggle theme"
-          >
-            {isDarkMode ? (
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path
-                  d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364-1.414-1.414M7.05 7.05 5.636 5.636m12.728 0-1.414 1.414M7.05 16.95l-1.414 1.414"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            ) : (
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path
-                  d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            )}
-          </motion.button>
+            <span className="sr-only">Open navigation</span>
+            <svg width="18" height="12" viewBox="0 0 18 12" fill="none" aria-hidden="true">
+              <path d="M1 1h16M1 6h12M1 11h16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          </button>
         </div>
-        <div className="mobile-nav md:hidden">
-          {NAV_ITEMS.map((item) => (
-            <motion.a
-              key={item.href}
-              href={item.href}
-              whileHover={{ y: -2 }}
-              className="mobile-nav-link"
-              onMouseEnter={() => setCursorLabel(item.label)}
-              onMouseLeave={resetCursor}
-            >
-              {item.label}
-            </motion.a>
-          ))}
-        </div>
-      </motion.nav>
+      </header>
 
-      <main className="page-content pt-48 pb-32 space-y-32" id="top">
-        <motion.section
-          className="container mx-auto px-4"
-          id="home"
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, ease: 'easeOut' }}
-        >
-          <div className="grid gap-16 lg:grid-cols-[1.1fr_0.9fr] items-start">
-            <div className="space-y-12">
+      <main className="relative z-10 mx-auto flex max-w-6xl flex-col gap-32 px-6 pb-24 pt-20" id="overview">
+        <section className="space-y-16">
+          <motion.div
+            className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.4em] text-slate-400"
+            variants={staggerChildren}
+            initial="hidden"
+            animate="visible"
+          >
+            {['Status: online', '0 notifications', '#OPEN_TO_WORK'].map((chip) => (
               <motion.span
-                className="hero-badge"
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.6, ease: 'easeOut' }}
+                key={chip}
+                variants={fadeUp}
+                className="rounded-full border border-white/10 bg-white/5 px-4 py-1 text-[0.65rem] text-slate-300 backdrop-blur"
               >
-                <span className="badge-dot" />
-                Engineering neon-drenched adventures
+                {chip}
               </motion.span>
-              <motion.h1
-                className="text-6xl md:text-7xl xl:text-8xl font-bold leading-tight gradient-text"
-                style={{ transform: `translateY(${refinedScroll * -14}px)` }}
-              >
-                BILHUDA PRAMANA
-                <span className="block text-2xl md:text-3xl font-normal tracking-[0.4em] mt-4">
-                  GAMEVERSE MODE
+            ))}
+          </motion.div>
+
+          <motion.div variants={fadeUp} initial="hidden" animate="visible" transition={{ duration: 0.7, ease: 'easeOut' }}>
+            <p className="text-sm font-medium uppercase tracking-[0.6em] text-slate-400">UX designer · Systems strategist</p>
+            <h1 className="mt-6 text-4xl font-semibold text-slate-100 sm:text-5xl md:text-6xl">
+              Crafting trustworthy journeys where research, service design and operations flow in lockstep.
+            </h1>
+            <p className="mt-6 max-w-3xl text-lg text-slate-300">
+              Bilhuda Pramana Hasibuan (he/him) blends dual degrees in Computer Science and UX Design to orchestrate service
+              ecosystems that feel effortless for customers and teams alike. From export logistics and festival mega-events to
+              digital wellbeing platforms, every touchpoint is grounded in research, accessibility and measurable outcomes.
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="grid gap-6 md:grid-cols-[1.6fr_1fr]"
+            variants={staggerChildren}
+            initial="hidden"
+            animate="visible"
+          >
+            <motion.div
+              variants={fadeUp}
+              className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl"
+            >
+              <div className="flex flex-wrap items-center gap-4 text-sm text-slate-300">
+                <span className="inline-flex items-center gap-2 rounded-full bg-emerald-400/20 px-3 py-1 text-emerald-200">
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-300 opacity-75" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-300" />
+                  </span>
+                  East Brisbane, Queensland, Australia
                 </span>
-              </motion.h1>
-              <motion.p
-                className="text-xl md:text-2xl max-w-2xl leading-relaxed text-muted"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.6, ease: 'easeOut' }}
-              >
-                A game <span className="word-morph">{WORDS[currentWordIndex]}</span> forging universes
-                where combat feels buttery, UI stays legible at warp speed and communities feel at
-                home. Every particle, sound cue and difficulty spike is tuned for maximum hype.
-              </motion.p>
-              <div className="flex flex-wrap gap-4">
-                <motion.a
-                  href="#games"
-                  className="cta-button"
-                  whileHover={{ scale: 1.05, y: -4 }}
-                  whileTap={{ scale: 0.96 }}
-                  onMouseEnter={() => setCursorLabel('Enter game vault')}
-                  onMouseLeave={resetCursor}
-                >
-                  Launch the worlds
-                </motion.a>
-                <motion.a
-                  href="mailto:hello@bilhuda.com"
-                  className="ghost-button"
-                  whileHover={{ scale: 1.05, y: -4 }}
-                  whileTap={{ scale: 0.96 }}
-                  onMouseEnter={() => setCursorLabel('Send transmission')}
-                  onMouseLeave={resetCursor}
-                >
-                  Drop a transmission
-                </motion.a>
+                <span>295 connections</span>
               </div>
-              <div className="grid gap-6 md:grid-cols-3">
-                {STATS.map((stat, index) => (
-                  <motion.div
-                    key={stat.id}
-                    className="stat-card glass-panel"
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 + index * 0.12, duration: 0.5, ease: 'easeOut' }}
-                    onMouseEnter={() => setCursorLabel(stat.label)}
-                    onMouseLeave={resetCursor}
-                  >
-                    <div className="stat-value">{stat.value}</div>
-                    <div className="stat-label">{stat.label}</div>
-                    <p className="stat-description">{stat.description}</p>
-                  </motion.div>
+              <p className="mt-6 text-2xl font-semibold text-slate-100">
+                Dual Bachelor’s Degree · Computer Science (University of Indonesia) &amp; Information Technology — UX Design (The University of Queensland)
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3 text-sm text-slate-300">
+                {openRoles.map((role) => (
+                  <span key={role} className="rounded-full border border-white/10 px-3 py-1">
+                    {role}
+                  </span>
                 ))}
               </div>
-            </div>
-
+            </motion.div>
             <motion.div
-              className="hero-panel glass-panel"
-              style={{ transform: `translateY(${refinedScroll * 30}px)` }}
-              initial={{ opacity: 0, y: 60 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.7, ease: 'easeOut' }}
+              variants={fadeUp}
+              className="flex flex-col justify-between gap-6 rounded-3xl border border-white/10 bg-gradient-to-br from-slate-900/80 via-slate-900/40 to-slate-800/30 p-8"
             >
-              <div className="hero-grid" aria-hidden />
-              <div className="relative space-y-8">
-                <div className="flex items-center justify-between">
-                  <p className="text-xs uppercase tracking-[0.4em] text-muted">Build pipeline</p>
-                  <motion.span
-                    className="accent-pill"
-                    animate={{ opacity: [0.4, 1, 0.4] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                  >
-                    Patch 1.72 live
-                  </motion.span>
-                </div>
-                <div className="space-y-5">
-                  {['Concept', 'Prototype', 'Playtest', 'Live Ops'].map((step, index) => (
-                    <motion.div
-                      key={step}
-                      className="process-row"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.6 + index * 0.1, duration: 0.5, ease: 'easeOut' }}
-                    >
-                      <span className="process-index">0{index + 1}</span>
-                      <span className="process-step">{step}</span>
-                      <motion.span
-                        className="process-meter"
-                        animate={{ width: ['0%', '100%'] }}
-                        transition={{ duration: 6, repeat: Infinity, delay: index * 0.6 }}
-                      />
-                    </motion.div>
-                  ))}
-                </div>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="insight-card">
-                    <p className="text-xs uppercase tracking-[0.4em] text-muted">Currently</p>
-                    <p className="text-base font-medium">
-                      Directing co-op chaos at <span className="highlight-text">Nebula Forge</span>
-                    </p>
-                  </div>
-                  <div className="insight-card">
-                    <p className="text-xs uppercase tracking-[0.4em] text-muted">Availability</p>
-                    <p className="text-base font-medium">Accepting legendary party invites</p>
-                  </div>
-                </div>
+              <div>
+                <h2 className="text-base font-semibold text-slate-100">Signature skills</h2>
+                <p className="mt-2 text-sm text-slate-300">
+                  Translating research signals into resilient product and service operations that delight humans and drive results.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2 text-sm text-slate-300">
+                {signatureSkills.map((skill) => (
+                  <span key={skill} className="rounded-full bg-white/10 px-3 py-1">
+                    {skill}
+                  </span>
+                ))}
               </div>
             </motion.div>
-          </div>
-        </motion.section>
+          </motion.div>
 
-        <motion.section
-          id="games"
-          className="container mx-auto px-4 space-y-12"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.7, ease: 'easeOut' }}
-        >
-          <div className="section-heading">
-            <span className="section-eyebrow">Featured Worlds</span>
-            <h2 className="section-title">Playtested experiences built for pure adrenaline</h2>
-            <p className="section-description">
-              Each release blends cinematic spectacle with systems depth — crafted for teams,
-              streamers and solo explorers chasing a new obsession.
-            </p>
-          </div>
-          <div className="grid gap-10 xl:grid-cols-2">
-            {PROJECTS.map((project, index) => (
+          <motion.div
+            className="grid gap-4 md:grid-cols-2"
+            variants={staggerChildren}
+            initial="hidden"
+            animate="visible"
+          >
+            {heroHighlights.map((item) => (
               <motion.article
-                key={project.id}
-                className="project-card glass-panel"
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ delay: index * 0.12, duration: 0.6, ease: 'easeOut' }}
-                whileHover={{ y: -12, rotateX: 2, rotateY: -2 }}
-                onMouseEnter={() => {
-                  setHoveredProject(project.id)
-                  setCursorLabel('Inspect game')
-                }}
-                onMouseLeave={() => {
-                  setHoveredProject(null)
-                  resetCursor()
-                }}
+                key={item.label}
+                variants={fadeUp}
+                className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl transition hover:border-sky-300/40"
               >
-                <div className="flex items-start justify-between gap-6">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-medium uppercase tracking-[0.4em] text-slate-400">{item.label}</p>
+                  <span className="text-sm font-semibold text-sky-200">{item.value}</span>
+                </div>
+                <p className="mt-4 text-base text-slate-300">{item.description}</p>
+                <div className="absolute inset-x-0 bottom-0 h-1 w-full bg-gradient-to-r from-transparent via-sky-300/40 to-transparent opacity-0 transition group-hover:opacity-100" />
+              </motion.article>
+            ))}
+          </motion.div>
+        </section>
+
+        <section id="experience" className="space-y-12">
+          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }}>
+            <p className="text-sm font-medium uppercase tracking-[0.6em] text-slate-400">Experience</p>
+            <h2 className="mt-4 text-3xl font-semibold text-slate-100">
+              Operational empathy meets design leadership across industries.
+            </h2>
+            <p className="mt-4 max-w-3xl text-base text-slate-300">
+              From export operations and large-scale events to frontline hospitality, Bilhuda designs rituals, systems and teams that keep
+              complex services intuitive and human.
+            </p>
+          </motion.div>
+
+          <div className="space-y-10">
+            {experiences.map((experience, index) => (
+              <motion.article
+                key={experience.company}
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{ delay: index * 0.1, duration: 0.6 }}
+                className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl"
+              >
+                <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                   <div>
-                    <p className="project-eyebrow">{project.year}</p>
-                    <h3 className="project-title">{project.title}</h3>
+                    <p className="text-sm uppercase tracking-[0.3em] text-slate-400">{experience.period}</p>
+                    <h3 className="mt-2 text-2xl font-semibold text-slate-100">{experience.role}</h3>
+                    <p className="text-base text-slate-300">{experience.company} · {experience.location}</p>
                   </div>
-                  <motion.span
-                    className="project-impact"
-                    animate={{ y: [0, -6, 0] }}
-                    transition={{ duration: 3, repeat: Infinity }}
-                  >
-                    {project.impact}
-                  </motion.span>
+                  <span className="mt-2 inline-flex max-w-xs items-center justify-center rounded-full border border-white/10 px-4 py-2 text-xs uppercase tracking-[0.3em] text-slate-300">
+                    Service &amp; systems leadership
+                  </span>
                 </div>
-                <p className="project-description">{project.description}</p>
-                <div className="project-meta">
-                  <span>{project.role}</span>
-                  <span>Party lead</span>
+                <p className="mt-6 text-base text-slate-300">{experience.summary}</p>
+                <ul className="mt-6 grid gap-3 text-sm text-slate-300 md:grid-cols-2">
+                  {experience.highlights.map((highlight) => (
+                    <li key={highlight} className="flex items-start gap-2">
+                      <span className="mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-sky-300" />
+                      <span>{highlight}</span>
+                    </li>
+                  ))}
+                </ul>
+              </motion.article>
+            ))}
+          </div>
+        </section>
+
+        <section id="projects" className="space-y-12">
+          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }}>
+            <p className="text-sm font-medium uppercase tracking-[0.6em] text-slate-400">Spotlight projects</p>
+            <h2 className="mt-4 text-3xl font-semibold text-slate-100">Designing human-centred experiences with measurable outcomes.</h2>
+            <p className="mt-4 max-w-3xl text-base text-slate-300">
+              Each initiative balances qualitative insight, operational feasibility and inclusive delivery to unlock sustainable impact.
+            </p>
+          </motion.div>
+          <div className="grid gap-8 md:grid-cols-2">
+            {projects.map((project) => (
+              <motion.article
+                key={project.name}
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
+                className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/8 via-white/5 to-white/10 p-7 backdrop-blur-xl"
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <h3 className="text-xl font-semibold text-slate-100">{project.name}</h3>
+                    <p className="text-sm text-slate-400">{project.discipline}</p>
+                  </div>
+                  <span className="rounded-full bg-sky-400/20 px-3 py-1 text-xs font-semibold text-sky-100">{project.outcome}</span>
                 </div>
-                <div className="flex flex-wrap gap-3 pt-6">
-                  {project.tags.map((tag) => (
-                    <span key={tag} className="project-tag">
+                <p className="mt-4 text-base text-slate-300">{project.description}</p>
+                <div className="mt-6 flex flex-wrap gap-2 text-xs uppercase tracking-[0.2em] text-slate-300">
+                  {project.focus.map((tag) => (
+                    <span key={tag} className="rounded-full border border-white/10 px-3 py-1">
                       {tag}
                     </span>
                   ))}
                 </div>
-                <motion.div
-                  className="project-card-highlight"
-                  style={{ background: project.accent }}
-                  animate={{ opacity: [0.3, 0.6, 0.3] }}
-                  transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-                />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-sky-400/0 via-sky-400/60 to-sky-400/0" />
               </motion.article>
             ))}
           </div>
-        </motion.section>
+        </section>
 
-        <motion.section
-          id="experience"
-          className="container mx-auto px-4 space-y-12"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.7, ease: 'easeOut' }}
-        >
-          <div className="section-heading">
-            <span className="section-eyebrow">Quest Log</span>
-            <h2 className="section-title">Leading squads through cinematic development cycles</h2>
-            <p className="section-description">
-              From indie dream teams to AAA strike forces, I bridge creative chaos and live ops
-              discipline to keep every release humming.
+        <section id="credentials" className="space-y-12">
+          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }}>
+            <p className="text-sm font-medium uppercase tracking-[0.6em] text-slate-400">Credentials</p>
+            <h2 className="mt-4 text-3xl font-semibold text-slate-100">Academic foundations and lifelong learning.</h2>
+            <p className="mt-4 max-w-3xl text-base text-slate-300">
+              An interdisciplinary education anchors Bilhuda’s ability to translate technical nuance into intuitive, evidence-backed design moments.
             </p>
+          </motion.div>
+          <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr]">
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.3 }}
+              className="space-y-6"
+            >
+              {education.map((item) => (
+                <article key={item.school} className="rounded-3xl border border-white/10 bg-white/5 p-7 backdrop-blur-xl">
+                  <p className="text-sm uppercase tracking-[0.3em] text-slate-400">{item.period}</p>
+                  <h3 className="mt-3 text-xl font-semibold text-slate-100">{item.school}</h3>
+                  <p className="text-base text-slate-300">{item.programme}</p>
+                  <p className="mt-4 text-sm text-slate-300">{item.details}</p>
+                </article>
+              ))}
+            </motion.div>
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.3 }}
+              className="rounded-3xl border border-white/10 bg-gradient-to-br from-slate-900/70 via-slate-900/40 to-slate-800/30 p-7 backdrop-blur-xl"
+            >
+              <h3 className="text-lg font-semibold text-slate-100">Recent certifications</h3>
+              <ul className="mt-6 space-y-5 text-sm text-slate-300">
+                {certifications.map((cert) => (
+                  <li key={cert.name} className="space-y-1">
+                    <p className="font-medium text-slate-100">{cert.name}</p>
+                    <p className="text-slate-400">{cert.issuer} · Issued {cert.issued}</p>
+                    <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Credential ID {cert.credentialId}</p>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
           </div>
-          <div className="timeline">
-            {EXPERIENCES.map((experience, index) => (
-              <motion.div
-                key={experience.id}
-                className="timeline-item glass-panel"
-                initial={{ opacity: 0, x: index % 2 === 0 ? -60 : 60 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.6, ease: 'easeOut' }}
-                onMouseEnter={() => setCursorLabel(experience.company)}
-                onMouseLeave={resetCursor}
-              >
-                <div className="timeline-marker" />
-                <div className="timeline-content">
-                  <div className="timeline-header">
-                    <h3>{experience.role}</h3>
-                    <span>{experience.period}</span>
-                  </div>
-                  <p className="timeline-company">{experience.company}</p>
-                  <p className="timeline-summary">{experience.summary}</p>
-                  <div className="timeline-tags">
-                    {experience.focus.map((item) => (
-                      <span key={item}>{item}</span>
-                    ))}
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.section>
+        </section>
 
-        <motion.section
-          id="community"
-          className="container mx-auto px-4 space-y-12"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.7, ease: 'easeOut' }}
-        >
-          <div className="section-heading">
-            <span className="section-eyebrow">Player Chatter</span>
-            <h2 className="section-title">Voices from the guilds and production floors</h2>
-            <p className="section-description">
-              Developers, community leads and players reflecting on the raids, the sprints and the
-              unforgettable launch nights we shared.
+        <section id="contact" className="space-y-10">
+          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }}>
+            <p className="text-sm font-medium uppercase tracking-[0.6em] text-slate-400">Contact</p>
+            <h2 className="mt-4 text-3xl font-semibold text-slate-100">Let’s build experiences that set new benchmarks.</h2>
+            <p className="mt-4 max-w-2xl text-base text-slate-300">
+              Reach out to explore UX strategy, service design, research partnerships or operational excellence engagements. Bilhuda thrives on collaborative missions that blend craft, data and compassion.
             </p>
-          </div>
-          <div className="grid gap-6 md:grid-cols-3">
-            {TESTIMONIALS.map((testimonial, index) => (
-              <motion.blockquote
-                key={testimonial.id}
-                className="testimonial-card glass-panel"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ delay: index * 0.15, duration: 0.6, ease: 'easeOut' }}
-                onMouseEnter={() => setCursorLabel(testimonial.name)}
-                onMouseLeave={resetCursor}
-              >
-                <p>“{testimonial.quote}”</p>
-                <footer>
-                  <span className="testimonial-name">{testimonial.name}</span>
-                  <span className="testimonial-title">{testimonial.title}</span>
-                </footer>
-              </motion.blockquote>
-            ))}
-          </div>
-        </motion.section>
-
-        <motion.section
-          id="contact"
-          className="container mx-auto px-4"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.7, ease: 'easeOut' }}
-        >
+          </motion.div>
           <motion.div
-            className="cta-card glass-panel"
-            whileHover={{ scale: 1.01 }}
-            onMouseEnter={() => setCursorLabel('Open comms')}
-            onMouseLeave={resetCursor}
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            className="flex flex-col gap-6 rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl md:flex-row md:items-center md:justify-between"
           >
-            <div className="space-y-6">
-              <span className="section-eyebrow">Open comms channel</span>
-              <h2 className="section-title">Assemble the next legendary drop together?</h2>
-              <p className="section-description">
-                Bring me your wildest mechanics, lore fragments or community dreams. I thrive on
-                co-piloting teams who crave spectacle, retention and heart.
+            <div>
+              <h3 className="text-lg font-semibold text-slate-100">Start the conversation</h3>
+              <p className="mt-2 max-w-xl text-sm text-slate-300">
+                Send a note with your challenge, timeline and the impact you’re aiming for. Bilhuda will respond with ways to move quickly without sacrificing depth.
               </p>
             </div>
-            <div className="flex flex-col gap-4 md:items-end">
-              <motion.a
-                href="mailto:hello@bilhuda.com"
-                className="cta-button"
-                whileHover={{ scale: 1.05, y: -4 }}
-                whileTap={{ scale: 0.96 }}
-                onMouseEnter={() => setCursorLabel('Send transmission')}
-                onMouseLeave={resetCursor}
-              >
-                hello@bilhuda.com
-              </motion.a>
-              <div className="flex gap-4">
-                {['Discord', 'Twitch', 'Itch.io'].map((item) => (
-                  <motion.a
-                    key={item}
-                    href="#"
-                    className="ghost-link"
-                    whileHover={{ y: -4 }}
-                    onMouseEnter={() => setCursorLabel(item)}
-                    onMouseLeave={resetCursor}
-                  >
-                    {item}
-                  </motion.a>
-                ))}
-              </div>
+            <div className="flex flex-wrap items-center gap-4">
+              {contactChannels.map((channel) => (
+                <motion.a
+                  key={channel.label}
+                  href={channel.href}
+                  target={channel.href.startsWith('http') ? '_blank' : undefined}
+                  rel={channel.href.startsWith('http') ? 'noreferrer' : undefined}
+                  className="inline-flex items-center justify-center rounded-full border border-white/10 px-5 py-2 text-sm font-semibold text-slate-100 transition hover:border-sky-300 hover:text-sky-200"
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  {channel.label}
+                </motion.a>
+              ))}
             </div>
           </motion.div>
-        </motion.section>
-
-        <footer className="container mx-auto px-4 text-sm text-muted text-center pt-12">
-          © {new Date().getFullYear()} Bilhuda Pramana. Respawned nightly in the gameverse.
-        </footer>
+        </section>
       </main>
 
-      <AnimatePresence>
-        {showAboutModal && (
-          <motion.div
-            className="modal-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.div
-              className="modal-card glass-panel"
-              initial={{ y: 60, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 40, opacity: 0 }}
-              transition={{ type: 'spring', damping: 18, stiffness: 180 }}
-            >
-              <div className="flex items-start justify-between gap-6">
-                <div className="space-y-4">
-                  <h2 className="text-3xl font-semibold">Lore drop: Bilhuda</h2>
-                  <p className="text-base leading-relaxed text-muted">
-                    I sculpt neon worlds that feel alive — from cinematic racers to lo-fi cozy
-                    sims. Years of systems design, animation tinkering and community rituals help
-                    me ship experiences that feel like Saturday-night raids with friends.
-                  </p>
-                  <p className="text-base leading-relaxed text-muted">
-                    When AFK I mod classic JRPGs, record ambient synth jams and host playtest
-                    nights in Jakarta’s indie arcade scene.
-                  </p>
-                  <div className="modal-skills">
-                    {[
-                      'Game Direction',
-                      'Combat Design',
-                      'Live Ops',
-                      'Sound Scripting',
-                      'Shader Art',
-                      'Community Rituals'
-                    ].map((skill) => (
-                      <span key={skill}>{skill}</span>
-                    ))}
-                  </div>
-                </div>
-                <motion.button
-                  className="icon-button"
-                  onClick={toggleAboutModal}
-                  whileHover={{ rotate: 90 }}
-                  whileTap={{ scale: 0.9 }}
-                  onMouseEnter={() => setCursorLabel('Seal portal')}
-                  onMouseLeave={resetCursor}
-                  aria-label="Close portal"
-                >
-                  ×
-                </motion.button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {activeProject && (
-          <motion.div
-            key={activeProject.id}
-            className="project-preview"
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{
-              opacity: 1,
-              scale: 1,
-              x: mousePosition.x + 24,
-              y: mousePosition.y + 24
-            }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
-          >
-            <span className="text-xs uppercase tracking-[0.4em] opacity-60">Hype meter</span>
-            <p className="text-sm font-semibold">{activeProject.impact}</p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <div className="keyboard-hint">Press Ctrl+D for nightcycle · Ctrl+A for the lore drop</div>
-    </>
+      <footer className="border-t border-white/10 bg-[#030818]/70 py-10 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 text-xs uppercase tracking-[0.3em] text-slate-500 sm:flex-row">
+          <span>© {new Date().getFullYear()} Bilhuda Pramana Hasibuan. Designed for timeless clarity.</span>
+          <nav id="site-navigation" className="flex flex-wrap items-center gap-4 text-[0.65rem]">
+            {navItems.map((item) => (
+              <a key={item.target} href={`#${item.target}`} className="hover:text-sky-200">
+                {item.label}
+              </a>
+            ))}
+          </nav>
+        </div>
+      </footer>
+    </div>
   )
 }
