@@ -1,459 +1,683 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
-import { motion } from 'framer-motion'
+import { Canvas, type ThreeEvent, useFrame, useThree } from '@react-three/fiber'
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import * as THREE from 'three'
 
-export default function Home() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
-  const [scrollProgress, setScrollProgress] = useState(0)
-  const [hoveredProject, setHoveredProject] = useState<number | null>(null)
-  const [isDarkMode, setIsDarkMode] = useState(false)
-  const [showAboutModal, setShowAboutModal] = useState(false)
-  const [cursorText, setCursorText] = useState('')
-  const [cursorVariant, setCursorVariant] = useState('default')
-  const [trailPositions, setTrailPositions] = useState<Array<{x: number, y: number}>>([])
-  
-  const constraintsRef = useRef(null)
+const WORLD_BOUNDS = { xz: 18, y: 8 }
+
+interface InputState {
+  forward: boolean
+  back: boolean
+  left: boolean
+  right: boolean
+  up: boolean
+  down: boolean
+  boost: boolean
+}
+
+interface OrbState {
+  id: number
+  position: THREE.Vector3
+  active: boolean
+  respawn: number
+  pulseOffset: number
+}
+
+interface CollectPayload {
+  boostActive: boolean
+  speed: number
+}
+
+interface WallHitPayload {
+  impact: number
+}
+
+interface GameWorldProps {
+  onCollect: (payload: CollectPayload) => void
+  onWallHit: (payload: WallHitPayload) => void
+  onBoostChange: (boosting: boolean) => void
+  mouseTarget: React.MutableRefObject<THREE.Vector2>
+}
+
+const COLLECT_MESSAGES = [
+  (combo: number) => `Combo x${combo} — the Bilhuda signal roars louder.`,
+  () => 'Shard absorbed. The neon playground stretches ahead.',
+  (combo: number) => `Plasma trail locked. Keep chaining for hyper combo x${combo + 1}.`,
+  () => 'Energy anchors synced. Drift into the glow.'
+]
+
+const formatNumber = (value: number) => value.toLocaleString('en-US')
+
+const formatTime = (totalSeconds: number) => {
+  const minutes = Math.floor(totalSeconds / 60)
+  const seconds = totalSeconds % 60
+  return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+}
+
+const randomPosition = () =>
+  new THREE.Vector3(
+    THREE.MathUtils.randFloatSpread(WORLD_BOUNDS.xz * 1.6),
+    THREE.MathUtils.randFloatSpread(WORLD_BOUNDS.y * 1.4),
+    THREE.MathUtils.randFloatSpread(WORLD_BOUNDS.xz * 1.6)
+  )
+
+const createOrbs = (count: number): OrbState[] =>
+  Array.from({ length: count }, (_, index) => ({
+    id: index,
+    position: randomPosition(),
+    active: true,
+    respawn: 0,
+    pulseOffset: Math.random() * Math.PI * 2
+  }))
+
+const useInputControls = (): InputState => {
+  const [input, setInput] = useState<InputState>({
+    forward: false,
+    back: false,
+    left: false,
+    right: false,
+    up: false,
+    down: false,
+    boost: false
+  })
 
   useEffect(() => {
-    const updateMousePosition = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
-      
-      // Add position to trail with a maximum of 10 positions
-      setTrailPositions(prev => {
-        const newPositions = [...prev, { x: e.clientX, y: e.clientY }]
-        if (newPositions.length > 10) {
-          return newPositions.slice(newPositions.length - 10)
+    const updateKey = (code: string, pressed: boolean) => {
+      setInput((prev) => {
+        switch (code) {
+          case 'KeyW':
+          case 'ArrowUp':
+            if (prev.forward === pressed) return prev
+            return { ...prev, forward: pressed }
+          case 'KeyS':
+          case 'ArrowDown':
+            if (prev.back === pressed) return prev
+            return { ...prev, back: pressed }
+          case 'KeyA':
+          case 'ArrowLeft':
+            if (prev.left === pressed) return prev
+            return { ...prev, left: pressed }
+          case 'KeyD':
+          case 'ArrowRight':
+            if (prev.right === pressed) return prev
+            return { ...prev, right: pressed }
+          case 'Space':
+          case 'KeyQ':
+            if (prev.up === pressed) return prev
+            return { ...prev, up: pressed }
+          case 'ControlLeft':
+          case 'ControlRight':
+          case 'KeyE':
+            if (prev.down === pressed) return prev
+            return { ...prev, down: pressed }
+          case 'ShiftLeft':
+          case 'ShiftRight':
+            if (prev.boost === pressed) return prev
+            return { ...prev, boost: pressed }
+          default:
+            return prev
         }
-        return newPositions
       })
     }
 
-    const updateScrollProgress = () => {
-      const scrollPx = document.documentElement.scrollTop
-      const winHeightPx = document.documentElement.scrollHeight - document.documentElement.clientHeight
-      const scrolled = (scrollPx / winHeightPx) * 100
-      setScrollProgress(scrolled)
-    }
-
-    // Keyboard shortcuts
-    const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.key === 'd' && e.ctrlKey) {
-        e.preventDefault()
-        setIsDarkMode(prev => !prev)
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(event.code)) {
+        event.preventDefault()
       }
-      if (e.key === 'a' && e.ctrlKey) {
-        e.preventDefault()
-        setShowAboutModal(prev => !prev)
-      }
+      updateKey(event.code, true)
     }
 
-    window.addEventListener('mousemove', updateMousePosition)
-    window.addEventListener('scroll', updateScrollProgress)
-    window.addEventListener('keydown', handleKeyPress)
-
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark-mode')
-    } else {
-      document.documentElement.classList.remove('dark-mode')
+    const handleKeyUp = (event: KeyboardEvent) => {
+      updateKey(event.code, false)
     }
+
+    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('keyup', handleKeyUp)
 
     return () => {
-      window.removeEventListener('mousemove', updateMousePosition)
-      window.removeEventListener('scroll', updateScrollProgress)
-      window.removeEventListener('keydown', handleKeyPress)
+      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('keyup', handleKeyUp)
     }
-  }, [isDarkMode])
-
-  const projects = [
-    {
-      id: 1,
-      title: "E-commerce Redesign",
-      description: "Improving user flow and conversion rates",
-      role: "Lead UX Designer",
-      year: "2024"
-    },
-    {
-      id: 2,
-      title: "Healthcare App",
-      description: "Making healthcare accessible",
-      role: "UX Research & Design",
-      year: "2023"
-    },
-    {
-      id: 3,
-      title: "Financial Dashboard",
-      description: "Simplifying complex data",
-      role: "Information Architecture",
-      year: "2023"
-    }
-  ]
-
-  const enterButton = () => {
-    setCursorText('View')
-    setCursorVariant('text')
-  }
-
-  const leaveButton = () => {
-    setCursorText('')
-    setCursorVariant('default')
-  }
-
-  const words = ['Designer', 'Thinker', 'Creator', 'Developer', 'UX Expert']
-  const [currentWordIndex, setCurrentWordIndex] = useState(0)
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentWordIndex(prev => (prev + 1) % words.length)
-    }, 2000)
-    return () => clearInterval(interval)
   }, [])
 
-  const toggleAboutModal = () => {
-    setShowAboutModal(!showAboutModal)
-  }
+  return input
+}
+
+const PlayerShip = ({ boostRef }: { boostRef: React.MutableRefObject<boolean> }) => {
+  const groupRef = useRef<THREE.Group>(null)
+  const glowRef = useRef<THREE.Mesh>(null)
+  const auraRef = useRef<THREE.Mesh>(null)
+
+  useFrame((state, delta) => {
+    if (!groupRef.current) return
+
+    groupRef.current.position.y += Math.sin(state.clock.elapsedTime * 4) * delta * 0.4
+
+    if (glowRef.current) {
+      const material = glowRef.current.material as THREE.MeshStandardMaterial
+      const base = boostRef.current ? 1.7 : 1.2
+      const pulse = 1 + Math.sin((state.clock.elapsedTime + 1.2) * 10) * 0.24
+      glowRef.current.scale.setScalar(base * pulse)
+      material.opacity = boostRef.current ? 0.6 : 0.35
+      material.emissiveIntensity = boostRef.current ? 3.4 : 2.2
+    }
+
+    if (auraRef.current) {
+      const material = auraRef.current.material as THREE.MeshStandardMaterial
+      const pulse = 1 + Math.sin((state.clock.elapsedTime + 0.6) * 5) * 0.15
+      auraRef.current.scale.setScalar(1.6 * pulse)
+      material.opacity = 0.25 + (boostRef.current ? 0.2 : 0.1)
+    }
+  })
+
+  return (
+    <group ref={groupRef}>
+      <mesh castShadow>
+        <coneGeometry args={[0.55, 1.6, 8]} />
+        <meshStandardMaterial
+          color="#7ff7ff"
+          metalness={0.85}
+          roughness={0.25}
+          emissive="#4bf3ff"
+          emissiveIntensity={1.8}
+        />
+      </mesh>
+      <mesh position={[0, -0.45, -0.25]} rotation={[Math.PI / 2, 0, 0]} castShadow>
+        <torusGeometry args={[0.42, 0.08, 14, 32]} />
+        <meshStandardMaterial color="#ffffff" metalness={0.65} roughness={0.25} emissive="#ff6bff" emissiveIntensity={1.4} />
+      </mesh>
+      <mesh ref={glowRef} position={[0, -0.95, -0.4]} transparent>
+        <coneGeometry args={[0.32, 1.5, 16]} />
+        <meshStandardMaterial color="#6fffe3" emissive="#6fffe3" emissiveIntensity={2.6} roughness={0.2} opacity={0.42} transparent />
+      </mesh>
+      <mesh ref={auraRef} position={[0, 0.1, 0]} transparent>
+        <sphereGeometry args={[0.82, 24, 24]} />
+        <meshStandardMaterial color="#ffffff" emissive="#6fffe3" emissiveIntensity={0.4} opacity={0.2} transparent />
+      </mesh>
+    </group>
+  )
+}
+
+const EnergyOrb = ({ data }: { data: OrbState }) => {
+  const coreRef = useRef<THREE.Mesh>(null)
+  const auraRef = useRef<THREE.Mesh>(null)
+
+  useFrame((state, delta) => {
+    if (!coreRef.current) return
+
+    const visible = data.active
+    coreRef.current.visible = visible
+    coreRef.current.position.copy(data.position)
+    coreRef.current.rotation.x += delta * 0.8
+    coreRef.current.rotation.y += delta * 0.6
+
+    const pulse = 1 + Math.sin((state.clock.elapsedTime + data.pulseOffset) * 3) * 0.25
+    coreRef.current.scale.setScalar(visible ? pulse : 0.0001)
+
+    if (auraRef.current) {
+      const material = auraRef.current.material as THREE.MeshBasicMaterial
+      auraRef.current.visible = visible
+      auraRef.current.position.copy(data.position)
+      auraRef.current.scale.setScalar(visible ? pulse * 2.1 : 0.0001)
+      material.opacity = 0.28 + Math.sin((state.clock.elapsedTime + data.pulseOffset) * 2.2) * 0.12
+    }
+  })
 
   return (
     <>
-      {/* Cursor Elements */}
-      <div 
-        className="cursor-dot" 
-        style={{ left: `${mousePosition.x}px`, top: `${mousePosition.y}px` }}
-      />
-      <div 
-        className="cursor-outline" 
-        style={{ 
-          left: `${mousePosition.x - 15}px`, 
-          top: `${mousePosition.y - 15}px`,
-          transform: `scale(${cursorVariant === 'text' ? 1.5 : 1})`
-        }}
-      >
-        {cursorVariant === 'text' && (
-          <span className="cursor-text">{cursorText}</span>
-        )}
-      </div>
-
-      {/* Cursor trails */}
-      {trailPositions.map((pos, i) => (
-        <motion.div
-          key={i}
-          className="cursor-trail"
-          initial={{ scale: 0.8, opacity: 0.8 }}
-          animate={{ 
-            scale: 0,
-            opacity: 0,
-            x: pos.x,
-            y: pos.y
-          }}
-          transition={{ duration: 0.5, delay: i * 0.02 }}
-        />
-      ))}
-
-      <div className="scroll-progress">
-        <div className="scroll-progress-bar" style={{ width: `${scrollProgress}%` }} />
-      </div>
-
-      <div className="page-content space-y-32 py-24">
-        {/* Theme toggle */}
-        <button 
-          className="fixed top-24 right-8 z-40 p-2 bg-off-white dark:bg-off-black border border-off-black dark:border-off-white rounded-full"
-          onClick={() => setIsDarkMode(prev => !prev)}
-          onMouseEnter={() => setCursorText('Theme')}
-          onMouseLeave={leaveButton}
-        >
-          {isDarkMode ? (
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-          ) : (
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-            </svg>
-          )}
-        </button>
-
-        {/* Hero Section */}
-        <section className="container mx-auto px-4">
-          <div className="max-w-3xl">
-            <p className="text-lg mb-8 font-mono reveal-text">Hello, I am</p>
-            <motion.h1 
-              className="text-6xl md:text-8xl font-bold mb-8 hover:text-off-yellow transition-colors cursor-default reveal-text"
-              whileHover={{ letterSpacing: "2px" }}
-              transition={{ type: "spring", stiffness: 100 }}
-            >
-              BILHUDA PRAMANA
-            </motion.h1>
-            <p className="text-xl md:text-2xl leading-relaxed opacity-70 hover:opacity-100 transition-opacity reveal-text">
-              A UX <span className="word-morph">{words[currentWordIndex]}</span> FOCUSED ON CREATING DIGITAL EXPERIENCES THAT ARE 
-              BOTH FUNCTIONAL AND MEANINGFUL. I BELIEVE IN THE POWER OF 
-              SIMPLICITY AND USER-CENTERED DESIGN.
-            </p>
-          </div>
-        </section>
-
-        {/* Projects Section */}
-        <section id="work" className="container mx-auto px-4">
-          <h2 className="text-2xl font-mono mb-16 reveal-text">Selected Projects</h2>
-          <motion.div className="space-y-8" ref={constraintsRef}>
-            {projects.map((project) => (
-              <motion.div
-                key={project.id}
-                className="group border-b border-off-black/10 dark:border-off-white/10 pb-8 project-item"
-                onMouseEnter={() => {
-                  setHoveredProject(project.id)
-                  setCursorText('Drag')
-                  setCursorVariant('text')
-                }}
-                onMouseLeave={() => {
-                  setHoveredProject(null)
-                  setCursorText('')
-                  setCursorVariant('default')
-                }}
-                drag="x"
-                dragConstraints={constraintsRef}
-                whileDrag={{ scale: 1.05 }}
-                whileHover={{
-                  x: 20,
-                  transition: { duration: 0.3 }
-                }}
-              >
-                <div className="flex items-baseline justify-between group-hover:text-off-yellow transition-colors">
-                  <h3 className="text-4xl font-bold mask-reveal">{project.title}</h3>
-                  <p className="text-lg opacity-50 group-hover:opacity-100 transition-opacity">{project.year}</p>
-                </div>
-                <div className="mt-4 space-y-2 overflow-hidden">
-                  <p className="text-xl transform translate-y-0 group-hover:translate-y-[-8px] transition-transform">
-                    {project.description}
-                  </p>
-                  <p className="text-lg opacity-0 transform translate-y-4 group-hover:translate-y-0 group-hover:opacity-70 transition-all">
-                    {project.role}
-                  </p>
-                </div>
-
-                {/* Tooltip that follows mouse */}
-                {hoveredProject === project.id && (
-                  <div 
-                    className="inline-tooltip"
-                    style={{ 
-                      left: `${mousePosition.x + 20}px`, 
-                      top: `${mousePosition.y + 20}px` 
-                    }}
-                  >
-                    Drag to explore
-                  </div>
-                )}
-              </motion.div>
-            ))}
-          </motion.div>
-        </section>
-
-        {/* About Section */}
-        <section id="about" className="container mx-auto px-4">
-          <div className="max-w-3xl">
-            <h2 
-              className="text-2xl font-mono mb-8 reveal-text cursor-pointer"
-              onClick={toggleAboutModal}
-              onMouseEnter={() => setCursorText('Click')}
-              onMouseLeave={leaveButton}
-            >
-              About
-            </h2>
-            
-            {/* Crossword-style about section */}
-            <div className="crossword-grid mb-8">
-              <div className="crossword-row">
-                <div className="crossword-cell active">D</div>
-                <div className="crossword-cell active">E</div>
-                <div className="crossword-cell active">S</div>
-                <div className="crossword-cell active">I</div>
-                <div className="crossword-cell active">G</div>
-                <div className="crossword-cell active">N</div>
-                <div className="crossword-cell active">E</div>
-                <div className="crossword-cell active">R</div>
-              </div>
-              <div className="crossword-row">
-                <div className="crossword-cell active">E</div>
-                <div className="crossword-cell"></div>
-                <div className="crossword-cell"></div>
-                <div className="crossword-cell"></div>
-                <div className="crossword-cell"></div>
-                <div className="crossword-cell"></div>
-                <div className="crossword-cell"></div>
-                <div className="crossword-cell"></div>
-              </div>
-              <div className="crossword-row">
-                <div className="crossword-cell active">V</div>
-                <div className="crossword-cell"></div>
-                <div className="crossword-cell active">U</div>
-                <div className="crossword-cell active">X</div>
-                <div className="crossword-cell"></div>
-                <div className="crossword-cell"></div>
-                <div className="crossword-cell"></div>
-                <div className="crossword-cell"></div>
-              </div>
-              <div className="crossword-row">
-                <div className="crossword-cell active">E</div>
-                <div className="crossword-cell"></div>
-                <div className="crossword-cell"></div>
-                <div className="crossword-cell"></div>
-                <div className="crossword-cell"></div>
-                <div className="crossword-cell"></div>
-                <div className="crossword-cell"></div>
-                <div className="crossword-cell"></div>
-              </div>
-              <div className="crossword-row">
-                <div className="crossword-cell active">L</div>
-                <div className="crossword-cell"></div>
-                <div className="crossword-cell"></div>
-                <div className="crossword-cell"></div>
-                <div className="crossword-cell active">C</div>
-                <div className="crossword-cell active">O</div>
-                <div className="crossword-cell active">D</div>
-                <div className="crossword-cell active">E</div>
-              </div>
-              <div className="crossword-row">
-                <div className="crossword-cell active">O</div>
-                <div className="crossword-cell"></div>
-                <div className="crossword-cell"></div>
-                <div className="crossword-cell"></div>
-                <div className="crossword-cell"></div>
-                <div className="crossword-cell"></div>
-                <div className="crossword-cell"></div>
-                <div className="crossword-cell"></div>
-              </div>
-              <div className="crossword-row">
-                <div className="crossword-cell active">P</div>
-                <div className="crossword-cell active">A</div>
-                <div className="crossword-cell active">S</div>
-                <div className="crossword-cell active">S</div>
-                <div className="crossword-cell active">I</div>
-                <div className="crossword-cell active">O</div>
-                <div className="crossword-cell active">N</div>
-                <div className="crossword-cell"></div>
-              </div>
-            </div>
-            
-            <div className="space-y-6 text-xl">
-              <motion.p 
-                className="hover:text-off-yellow transition-colors reveal-text interactive-text"
-                whileHover={{ scale: 1.02 }}
-              >
-                I SPECIALIZE IN CREATING INTUITIVE AND ACCESSIBLE DIGITAL EXPERIENCES.
-                MY APPROACH COMBINES USER RESEARCH, ITERATIVE DESIGN, AND A DEEP
-                UNDERSTANDING OF HUMAN BEHAVIOR.
-              </motion.p>
-              <motion.p 
-                className="hover:text-off-yellow transition-colors reveal-text interactive-text"
-                whileHover={{ scale: 1.02 }}
-              >
-                WITH 5+ YEARS OF EXPERIENCE IN UX DESIGN, I'VE WORKED ON PROJECTS
-                RANGING FROM E-COMMERCE PLATFORMS TO HEALTHCARE APPLICATIONS.
-              </motion.p>
-            </div>
-          </div>
-        </section>
-
-        {/* Contact Section */}
-        <section id="contact" className="container mx-auto px-4">
-          <div className="max-w-3xl">
-            <h2 className="text-2xl font-mono mb-8 reveal-text">Let's Connect</h2>
-            <div className="space-y-4">
-              <motion.a 
-                href="mailto:hello@bilhuda.com" 
-                className="block text-2xl hover:text-off-yellow transition-all reveal-text email-link"
-                whileHover={{ x: 20 }}
-                onMouseEnter={enterButton}
-                onMouseLeave={leaveButton}
-              >
-                hello@bilhuda.com
-              </motion.a>
-              <div className="flex space-x-8 text-lg reveal-text">
-                <motion.a 
-                  href="#" 
-                  className="hover-underline hover:text-off-yellow transition-colors"
-                  whileHover={{ y: -5 }}
-                  onMouseEnter={enterButton}
-                  onMouseLeave={leaveButton}
-                >
-                  LinkedIn
-                </motion.a>
-                <motion.a 
-                  href="#" 
-                  className="hover-underline hover:text-off-yellow transition-colors"
-                  whileHover={{ y: -5 }}
-                  onMouseEnter={enterButton}
-                  onMouseLeave={leaveButton}
-                >
-                  Twitter
-                </motion.a>
-                <motion.a 
-                  href="#" 
-                  className="hover-underline hover:text-off-yellow transition-colors"
-                  whileHover={{ y: -5 }}
-                  onMouseEnter={enterButton}
-                  onMouseLeave={leaveButton}
-                >
-                  Read.cv
-                </motion.a>
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      {/* About Modal */}
-      {showAboutModal && (
-        <motion.div 
-          className="fixed inset-0 bg-off-black/80 backdrop-blur-md z-50 flex items-center justify-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          <motion.div 
-            className="bg-off-white dark:bg-off-black text-off-black dark:text-off-white p-8 max-w-2xl rounded-lg"
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ type: "spring", damping: 15 }}
-          >
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold">More About Me</h2>
-              <button 
-                onClick={toggleAboutModal}
-                className="text-2xl"
-                onMouseEnter={() => setCursorText('Close')}
-                onMouseLeave={leaveButton}
-              >
-                ×
-              </button>
-            </div>
-            <div className="space-y-4">
-              <p>
-                I am a UX Designer with a passion for creating digital experiences that are both functional and delightful. 
-                My background in psychology allows me to understand human behavior and apply these insights to design.
-              </p>
-              <p>
-                When I'm not designing, you can find me exploring new technologies, reading design books, or hiking in nature.
-              </p>
-              <div className="mt-6">
-                <h3 className="text-xl font-bold mb-2">Skills</h3>
-                <div className="flex flex-wrap gap-2">
-                  <span className="px-3 py-1 bg-off-yellow text-off-black rounded-full">UX Design</span>
-                  <span className="px-3 py-1 bg-off-yellow text-off-black rounded-full">UI Design</span>
-                  <span className="px-3 py-1 bg-off-yellow text-off-black rounded-full">User Research</span>
-                  <span className="px-3 py-1 bg-off-yellow text-off-black rounded-full">Prototyping</span>
-                  <span className="px-3 py-1 bg-off-yellow text-off-black rounded-full">Figma</span>
-                  <span className="px-3 py-1 bg-off-yellow text-off-black rounded-full">HTML/CSS</span>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-
-      {/* Keyboard shortcuts hint */}
-      <div className="fixed bottom-4 right-4 text-xs font-mono opacity-50">
-        Press Ctrl+D for dark mode | Ctrl+A for about modal
-      </div>
+      <mesh ref={coreRef} castShadow>
+        <icosahedronGeometry args={[0.6, 1]} />
+        <meshStandardMaterial color="#7dffeb" emissive="#2cffd3" emissiveIntensity={1.8} roughness={0.2} metalness={0.1} />
+      </mesh>
+      <mesh ref={auraRef} scale={2}>
+        <sphereGeometry args={[1, 32, 32]} />
+        <meshBasicMaterial color="#6fffe3" transparent opacity={0.35} />
+      </mesh>
     </>
   )
-} 
+}
+
+const Starfield = () => {
+  const pointsRef = useRef<THREE.Points>(null)
+  const positions = useMemo(() => {
+    const count = 1800
+    const array = new Float32Array(count * 3)
+    for (let i = 0; i < count; i += 1) {
+      array[i * 3] = THREE.MathUtils.randFloatSpread(160)
+      array[i * 3 + 1] = THREE.MathUtils.randFloatSpread(160)
+      array[i * 3 + 2] = THREE.MathUtils.randFloatSpread(160)
+    }
+    return array
+  }, [])
+
+  useFrame((_, delta) => {
+    if (!pointsRef.current) return
+    pointsRef.current.rotation.y += delta * 0.015
+    pointsRef.current.rotation.x += delta * 0.006
+  })
+
+  return (
+    <points ref={pointsRef} frustumCulled={false}>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" array={positions} count={positions.length / 3} itemSize={3} />
+      </bufferGeometry>
+      <pointsMaterial size={0.35} color="#6fffe3" sizeAttenuation depthWrite={false} transparent opacity={0.6} />
+    </points>
+  )
+}
+
+const NeonGrid = () => {
+  const helper = useMemo(() => {
+    const grid = new THREE.GridHelper(160, 80, new THREE.Color('#2cffec'), new THREE.Color('#143264'))
+    const materials = grid.material
+    if (Array.isArray(materials)) {
+      materials.forEach((material) => {
+        material.transparent = true
+        material.opacity = 0.2
+      })
+    } else {
+      materials.transparent = true
+      materials.opacity = 0.2
+    }
+    return grid
+  }, [])
+
+  useEffect(() => () => helper.dispose(), [helper])
+
+  return <primitive object={helper} position={[0, -9, 0]} />
+}
+
+type FloatingRingProps = {
+  radius: number
+  position: [number, number, number]
+  speed: number
+  color: string
+}
+
+const FloatingRing = ({ radius, position, speed, color }: FloatingRingProps) => {
+  const ringRef = useRef<THREE.Mesh>(null)
+
+  useFrame((state, delta) => {
+    if (!ringRef.current) return
+    ringRef.current.rotation.x += delta * speed * 0.5
+    ringRef.current.rotation.z += delta * speed * 0.4
+    ringRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * speed) * 0.6
+  })
+
+  return (
+    <mesh ref={ringRef} position={position} rotation={[Math.PI / 2, 0, 0]}
+      receiveShadow>
+      <torusGeometry args={[radius, 0.12, 16, 64]} />
+      <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.9} roughness={0.3} metalness={0.45} />
+    </mesh>
+  )
+}
+
+const FloatingRings = () => {
+  const rings = useMemo<FloatingRingProps[]>(
+    () => [
+      { radius: 6, position: [0, -2.4, -4], speed: 0.6, color: '#4b82ff' },
+      { radius: 9, position: [-6, 1.8, 3], speed: 0.4, color: '#ff6bff' },
+      { radius: 4.5, position: [6, 2.2, -2], speed: 0.75, color: '#6fffe3' }
+    ],
+    []
+  )
+
+  return (
+    <group>
+      {rings.map((ring) => (
+        <FloatingRing key={`${ring.radius}-${ring.position.join('-')}`} {...ring} />
+      ))}
+    </group>
+  )
+}
+
+const GameWorld = ({ onCollect, onWallHit, onBoostChange, mouseTarget }: GameWorldProps) => {
+  const shipRef = useRef<THREE.Group>(null)
+  const boostRef = useRef(false)
+  const boostState = useRef(false)
+  const velocityRef = useRef(new THREE.Vector3())
+  const wallCooldown = useRef(0)
+  const input = useInputControls()
+  const { camera } = useThree()
+  const orbsRef = useRef<OrbState[]>(createOrbs(42))
+  const [, forceRerender] = useState(0)
+
+  useFrame((state, delta) => {
+    const ship = shipRef.current
+    if (!ship) return
+
+    const movement = new THREE.Vector3(
+      (input.right ? 1 : 0) - (input.left ? 1 : 0),
+      (input.up ? 1 : 0) - (input.down ? 1 : 0),
+      (input.forward ? -1 : 0) + (input.back ? 1 : 0)
+    )
+
+    if (movement.lengthSq() > 0) {
+      movement.normalize()
+    }
+
+    const boost = input.boost
+    boostRef.current = boost
+    if (boost !== boostState.current) {
+      boostState.current = boost
+      onBoostChange(boost)
+    }
+
+    const acceleration = boost ? 42 : 28
+    velocityRef.current.addScaledVector(movement, acceleration * delta)
+
+    const friction = boost ? 0.9 : 0.82
+    velocityRef.current.multiplyScalar(friction)
+
+    const maxVelocity = boost ? 18 : 12
+    if (velocityRef.current.length() > maxVelocity) {
+      velocityRef.current.setLength(maxVelocity)
+    }
+
+    ship.position.addScaledVector(velocityRef.current, delta)
+    ship.position.y += Math.sin(state.clock.elapsedTime * 0.6) * delta * 0.4
+
+    const bounds = WORLD_BOUNDS
+    let bounced = false
+
+    if (ship.position.x > bounds.xz) {
+      ship.position.x = bounds.xz
+      velocityRef.current.x *= -0.48
+      bounced = true
+    } else if (ship.position.x < -bounds.xz) {
+      ship.position.x = -bounds.xz
+      velocityRef.current.x *= -0.48
+      bounced = true
+    }
+
+    if (ship.position.z > bounds.xz) {
+      ship.position.z = bounds.xz
+      velocityRef.current.z *= -0.48
+      bounced = true
+    } else if (ship.position.z < -bounds.xz) {
+      ship.position.z = -bounds.xz
+      velocityRef.current.z *= -0.48
+      bounced = true
+    }
+
+    if (ship.position.y > bounds.y) {
+      ship.position.y = bounds.y
+      velocityRef.current.y *= -0.38
+      bounced = true
+    } else if (ship.position.y < -bounds.y) {
+      ship.position.y = -bounds.y
+      velocityRef.current.y *= -0.38
+      bounced = true
+    }
+
+    if (bounced) {
+      wallCooldown.current -= delta
+      if (wallCooldown.current <= 0) {
+        wallCooldown.current = 0.45
+        onWallHit({ impact: velocityRef.current.length() })
+      }
+    } else {
+      wallCooldown.current = Math.max(0, wallCooldown.current - delta)
+    }
+
+    const look = mouseTarget.current
+    ship.rotation.x = THREE.MathUtils.lerp(ship.rotation.x, look.y * 0.35 - velocityRef.current.z * 0.04, 0.08)
+    ship.rotation.z = THREE.MathUtils.lerp(ship.rotation.z, -look.x * 0.45 - velocityRef.current.x * 0.05, 0.08)
+    ship.rotation.y = THREE.MathUtils.lerp(ship.rotation.y, look.x * 0.25, 0.08)
+
+    const camTarget = new THREE.Vector3(ship.position.x * 0.42, ship.position.y + 5.4, ship.position.z + 14)
+    camera.position.lerp(camTarget, 0.06)
+    camera.lookAt(ship.position)
+
+    let changed = false
+    const playerPosition = ship.position
+
+    orbsRef.current.forEach((orb) => {
+      if (orb.active) {
+        if (orb.position.distanceTo(playerPosition) < 1.6) {
+          orb.active = false
+          orb.respawn = 1.4 + Math.random() * 1.8
+          changed = true
+          onCollect({ boostActive: boostRef.current, speed: velocityRef.current.length() })
+        }
+      } else {
+        orb.respawn -= delta
+        if (orb.respawn <= 0) {
+          orb.active = true
+          orb.position.copy(randomPosition())
+          orb.respawn = 0
+          changed = true
+        }
+      }
+    })
+
+    if (changed) {
+      forceRerender((value) => value + 1)
+    }
+  })
+
+  return (
+    <>
+      <group ref={shipRef} position={[0, 0, 8]}>
+        <PlayerShip boostRef={boostRef} />
+      </group>
+      {orbsRef.current.map((orb) => (
+        <EnergyOrb key={orb.id} data={orb} />
+      ))}
+      <FloatingRings />
+      <NeonGrid />
+      <Starfield />
+    </>
+  )
+}
+
+const HomePage = () => {
+  const [score, setScore] = useState(0)
+  const [combo, setCombo] = useState(1)
+  const [maxCombo, setMaxCombo] = useState(1)
+  const [seconds, setSeconds] = useState(0)
+  const [statusMessage, setStatusMessage] = useState('Collect radiant shards to amplify the Bilhuda waveform.')
+  const [isBoosting, setIsBoosting] = useState(false)
+  const [highScore, setHighScore] = useState(0)
+  const [gameKey, setGameKey] = useState(0)
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
+  const mouseTarget = useRef(new THREE.Vector2(0, 0))
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const stored = window.localStorage.getItem('bp-neon-highscore')
+    if (stored) {
+      const parsed = Number.parseInt(stored, 10)
+      if (!Number.isNaN(parsed)) {
+        setHighScore(parsed)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current)
+    }
+    timerRef.current = setInterval(() => {
+      setSeconds((prev) => prev + 1)
+    }, 1000)
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+      }
+    }
+  }, [gameKey])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    window.localStorage.setItem('bp-neon-highscore', String(highScore))
+  }, [highScore])
+
+  const handleCollect = useCallback(
+    ({ boostActive, speed }: CollectPayload) => {
+      const nextCombo = Math.min(combo + 1, 20)
+      const velocityBonus = Math.round(speed * 14)
+      const baseScore = boostActive ? 220 : 150
+
+      setScore((prev) => {
+        const updated = prev + baseScore * combo + velocityBonus
+        setHighScore((current) => (updated > current ? updated : current))
+        return updated
+      })
+
+      setCombo(nextCombo)
+      setMaxCombo((prev) => (nextCombo > prev ? nextCombo : prev))
+
+      const generator = COLLECT_MESSAGES[Math.floor(Math.random() * COLLECT_MESSAGES.length)]
+      setStatusMessage(generator(nextCombo))
+    },
+    [combo]
+  )
+
+  const handleWallHit = useCallback(
+    ({ impact }: WallHitPayload) => {
+      if (combo > 1) {
+        setStatusMessage(`Wall bounce! Combo reset — impact ${impact.toFixed(1)}g.`)
+      } else {
+        setStatusMessage('Breathe, align, and chase the next shard.')
+      }
+      setCombo(1)
+    },
+    [combo]
+  )
+
+  const handleBoostChange = useCallback((boosting: boolean) => {
+    setIsBoosting(boosting)
+    if (boosting) {
+      setStatusMessage('Hyper boost engaged — carve the Bilhuda trail!')
+    }
+  }, [])
+
+  const handlePointerMove = useCallback((event: ThreeEvent<PointerEvent>) => {
+    const bounds = event.currentTarget.getBoundingClientRect()
+    const x = (event.clientX - bounds.left) / bounds.width
+    const y = (event.clientY - bounds.top) / bounds.height
+    mouseTarget.current.set(x * 2 - 1, -(y * 2 - 1))
+  }, [])
+
+  const handleReset = useCallback(() => {
+    setGameKey((value) => value + 1)
+    setScore(0)
+    setCombo(1)
+    setMaxCombo(1)
+    setSeconds(0)
+    setStatusMessage('Fresh run online. Guide the neon letters into orbit.')
+    setIsBoosting(false)
+  }, [])
+
+  return (
+    <main className="game-page">
+      <div className="canvas-shell">
+        <Canvas
+          key={gameKey}
+          shadows
+          camera={{ fov: 55, position: [0, 6, 18] }}
+          dpr={[1, 2]}
+          onPointerMove={handlePointerMove}
+        >
+          <color attach="background" args={["#020014"]} />
+          <fog attach="fog" args={["#020014", 25, 90]} />
+          <ambientLight intensity={0.4} />
+          <pointLight position={[0, 8, 10]} intensity={2.1} color="#6fffe3" castShadow />
+          <pointLight position={[-12, -6, -14]} intensity={1.4} color="#ff6bff" />
+          <Suspense fallback={null}>
+            <GameWorld
+              onCollect={handleCollect}
+              onWallHit={handleWallHit}
+              onBoostChange={handleBoostChange}
+              mouseTarget={mouseTarget}
+            />
+          </Suspense>
+        </Canvas>
+      </div>
+      <div className="hud">
+        <div className="hud-top">
+          <p className="hero-subtitle">Bilhuda Pramana Hasibuan</p>
+          <h1 className="hero-name">Neon Hyper Playground</h1>
+          <div className="status-chip">
+            <span>Status</span>
+            <strong>{combo > 1 ? `Combo x${combo}` : 'Exploring'}</strong>
+          </div>
+          <p className="status-message">{statusMessage}</p>
+          <div className="score-board">
+            <div className="score-card">
+              <span className="score-label">Score</span>
+              <span className={`score-value${isBoosting ? ' boosting' : ''}`}>{formatNumber(score)}</span>
+            </div>
+            <div className="score-card">
+              <span className="score-label">Time</span>
+              <span className="score-value">{formatTime(seconds)}</span>
+            </div>
+            <div className="score-card">
+              <span className="score-label">Best Combo</span>
+              <span className="score-value">x{maxCombo}</span>
+            </div>
+            <div className="score-card">
+              <span className="score-label">High Score</span>
+              <span className="score-value">{formatNumber(highScore)}</span>
+            </div>
+          </div>
+          <button className="reset-button" type="button" onClick={handleReset}>
+            Restart Run
+          </button>
+        </div>
+        <div className="controls">
+          <div className="controls-group">
+            <span className="controls-title">Drift</span>
+            <div className="controls-keys">
+              <kbd>W</kbd>
+              <kbd>A</kbd>
+              <kbd>S</kbd>
+              <kbd>D</kbd>
+            </div>
+            <div className="controls-keys">
+              <kbd>↑</kbd>
+              <kbd>←</kbd>
+              <kbd>↓</kbd>
+              <kbd>→</kbd>
+            </div>
+          </div>
+          <div className="controls-group">
+            <span className="controls-title">Rise / Dive</span>
+            <div className="controls-keys">
+              <kbd>Space</kbd>
+              <kbd>Ctrl</kbd>
+            </div>
+          </div>
+          <div className="controls-group">
+            <span className="controls-title">Boost</span>
+            <div className="controls-keys">
+              <kbd>Shift</kbd>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="status-bar">
+        <div className="chip">
+          <span>Session</span>
+          <strong>{formatTime(seconds)}</strong>
+        </div>
+        <div className={`chip${isBoosting ? ' alert' : ''}`}>
+          <span>Thruster</span>
+          <strong>{isBoosting ? 'Boost' : 'Cruise'}</strong>
+        </div>
+        <div className={`chip${combo >= 5 ? ' alert' : ''}`}>
+          <span>Combo</span>
+          <strong>x{combo}</strong>
+        </div>
+      </div>
+      <div className="nebula one" />
+      <div className="nebula two" />
+      <div className="nebula three" />
+    </main>
+  )
+}
+
+export default HomePage
