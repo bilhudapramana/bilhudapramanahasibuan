@@ -3,110 +3,121 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 
-const WORDS = ['Designer', 'Thinker', 'Creator', 'Developer', 'UX Expert']
+const WORDS = [
+  'UX Designer',
+  'UX Researcher',
+  'Product Designer',
+  'Service Designer',
+  'Operations Strategist'
+]
 
 const NAV_ITEMS = [
-  { label: 'Work', href: '#work' },
-  { label: 'Experience', href: '#about' },
-  { label: 'Kind Words', href: '#testimonials' },
+  { label: 'Overview', href: '#home' },
+  { label: 'Experience', href: '#experience' },
+  { label: 'Case Studies', href: '#projects' },
+  { label: 'Impact', href: '#impact' },
   { label: 'Contact', href: '#contact' }
 ]
 
 const PROJECTS = [
   {
     id: 1,
-    title: 'E-commerce Flagship',
+    title: 'SPONTANEO',
     description:
-      'Reimagined the purchase journey for a luxury fashion house with spatial storytelling and seamless motion micro-interactions.',
-    role: 'Lead Product Designer',
+      'Led UX research and end-to-end design for an iOS social spontaneity app. Combined advanced interviews, journey mapping, and multivariate A/B testing to streamline discovery and delight.',
+    role: 'Lead UX Designer & iOS Developer',
+    context: 'UQ industry collaboration',
     year: '2024',
-    impact: '+28% conversion',
-    tags: ['Design Systems', 'Motion Language', 'A/B Testing'],
-    accent: 'linear-gradient(135deg, rgba(255,214,94,0.65), rgba(255,120,87,0.35))'
+    impact: '85% engagement lift',
+    tags: ['Journey Mapping', 'A/B Testing', 'SwiftUI Prototype'],
+    accent: 'linear-gradient(135deg, rgba(255,72,173,0.7), rgba(72,209,255,0.4))'
   },
   {
     id: 2,
-    title: 'Holistic Healthcare',
+    title: 'BLANDT',
     description:
-      'Crafted a calm and confident experience for a preventive-care platform balancing clinical data with human warmth.',
-    role: 'Principal UX Designer',
+      'Redesigned a B2B workflow platform with a scalable component system. Reduced task completion time by 40% while elevating UX metrics through competitive analysis and design system architecture.',
+    role: 'UX Researcher & UI Designer',
+    context: 'Enterprise workflow redesign',
     year: '2023',
-    impact: '+41 NPS',
-    tags: ['Design Research', 'Accessibility', 'Service Blueprint'],
-    accent: 'linear-gradient(135deg, rgba(123,224,255,0.5), rgba(67,104,255,0.45))'
+    impact: '40% faster workflows',
+    tags: ['Design Systems', 'Competitive Analysis', 'Enterprise UX'],
+    accent: 'linear-gradient(135deg, rgba(135,255,158,0.45), rgba(44,232,224,0.45))'
   },
   {
     id: 3,
-    title: 'Financial Command Center',
+    title: 'POSTUREBLOOM',
     description:
-      'Designed a multi-device portfolio dashboard with adaptive density, cinematic transitions and real-time collaboration tools.',
-    role: 'Information Architecture',
+      'Created an accessibility-first IoT interface with contextual insights. Reduced onboarding drop-off by 60% through progressive disclosure and inclusive interaction design.',
+    role: 'Product Designer & UX Lead',
+    context: 'Inclusive IoT wellness product',
     year: '2023',
-    impact: 'x2 engagement',
-    tags: ['Data Visualization', 'Design Ops', 'Realtime Systems'],
-    accent: 'linear-gradient(135deg, rgba(168,255,120,0.45), rgba(46,196,182,0.45))'
+    impact: '60% drop-off reduction',
+    tags: ['Accessibility', 'IoT Interface', 'Data Visualization'],
+    accent: 'linear-gradient(135deg, rgba(255,180,84,0.5), rgba(255,94,247,0.4))'
   },
   {
     id: 4,
-    title: 'Intelligent Mobility',
+    title: 'GREENCLINIC',
     description:
-      'Built an intuitive companion app for electric vehicles with predictive routing, ambient gestures and adaptive audio cues.',
-    role: 'Experience Lead',
+      'Designed a mental health platform for Australian university students experiencing burnout. Delivered a calming, mobile-first experience with mood tracking and tailored wellbeing insights.',
+    role: 'UI Designer & Front-end Developer',
+    context: 'Mental health initiative for students',
     year: '2022',
-    impact: '-36% support tickets',
-    tags: ['Product Strategy', 'Voice & Gesture', 'Edge Cases'],
-    accent: 'linear-gradient(135deg, rgba(255,140,222,0.45), rgba(98,0,234,0.45))'
+    impact: '50% faster navigation',
+    tags: ['Figma', 'User Testing', 'Responsive Front-end'],
+    accent: 'linear-gradient(135deg, rgba(112,123,255,0.55), rgba(255,105,120,0.4))'
   }
 ]
 
 const STATS = [
   {
-    id: 'experience',
-    value: '6+',
-    label: 'Years crafting flagship products',
-    description: 'From e-commerce to healthcare, leading end-to-end experience strategy.'
+    id: 'engagement',
+    value: '85%+',
+    label: 'Engagement increase',
+    description: "SPONTANEO's research-led pivots reignited product stickiness."
   },
   {
-    id: 'launches',
-    value: '35',
-    label: 'High-impact launches',
-    description: 'Shipped experiences shaped around measurable outcomes and delight.'
+    id: 'usability',
+    value: '92%',
+    label: 'Usability satisfaction',
+    description: 'Prototype testing delivered high confidence before engineering handoff.'
   },
   {
-    id: 'impact',
-    value: '120M+',
-    label: 'Users influenced',
-    description: 'Designing responsibly at scale for global, multi-platform ecosystems.'
+    id: 'efficiency',
+    value: '40%',
+    label: 'Workflow efficiency gain',
+    description: "BLANDT's component library powered faster task completion for teams."
   }
 ]
 
 const EXPERIENCES = [
   {
     id: 1,
-    company: 'Nusantara Commerce',
-    role: 'Lead UX Designer',
-    period: '2022 — Present',
+    company: "Domino's Queen St",
+    role: 'Shift Team Lead',
+    period: 'Jun 2023 — Present',
     summary:
-      'Guiding a multi-disciplinary product team to craft elevated retail journeys across Southeast Asia.',
-    focus: ['Design Strategy', 'Systems Thinking', 'Motion Direction']
+      'Empowering a high-energy crew to exceed service standards through data-driven shift planning, quality control, and rapid customer support on the ground.',
+    focus: ['Team Leadership', 'Customer Experience', 'Operational Excellence']
   },
   {
     id: 2,
-    company: 'Halo Health',
-    role: 'Senior Product Designer',
-    period: '2019 — 2022',
+    company: 'PT. Ekspor Pradana Nusantara',
+    role: 'Operations & Systems Manager',
+    period: 'Feb 2022 — Oct 2024',
     summary:
-      'Built trust-driven patient experiences and unified clinician tooling with rigorous accessibility standards.',
-    focus: ['Inclusive Design', 'Service Design', 'Research Ops']
+      'Redesigned export workflows with user-centered systems architecture that boosted efficiency by 30% and aligned cross-functional teams around shared insights.',
+    focus: ['Process Improvement', 'Systems Thinking', 'Stakeholder Alignment']
   },
   {
     id: 3,
-    company: 'Freelance',
-    role: 'Experience Consultant',
-    period: '2017 — 2019',
+    company: 'COMPFEST',
+    role: 'Head of Transportation & Venue',
+    period: 'Jan 2022 — Nov 2022',
     summary:
-      'Partnered with visionary founders to transform complex problems into signature product moments.',
-    focus: ['Brand Experience', 'Rapid Prototyping', 'Product Discovery']
+      "Orchestrated end-to-end logistics for Indonesia's largest student-led IT festival, coordinating 8,500+ attendees, 50 speakers, and multi-site experiences.",
+    focus: ['Logistics Strategy', 'Cross-functional Leadership', 'Experience Design']
   }
 ]
 
@@ -114,23 +125,23 @@ const TESTIMONIALS = [
   {
     id: 1,
     quote:
-      'Bilhuda brings an enviable calm to complex projects. Every interaction feels choreographed yet effortless for our customers.',
-    name: 'Amelia Hart',
-    title: 'VP of Product, Luminara'
+      'Boosted SPONTANEO user engagement by 85% via advanced interviews, journey mapping, and multivariate A/B testing while upholding WCAG 2.1 accessibility.',
+    name: 'SPONTANEO',
+    title: 'Lead UX Designer & iOS Developer'
   },
   {
     id: 2,
     quote:
-      'A rare blend of systems thinking and poetic craft. Our flagship launch finally feels worthy of the brand we imagined.',
-    name: 'Kenji Nakamura',
-    title: 'Founder, Oru Mobility'
+      'Cut BLANDT task completion times by 40% through a scalable design system, strategic competitive analysis, and modular workflows.',
+    name: 'BLANDT',
+    title: 'UX Researcher & UI Designer'
   },
   {
     id: 3,
     quote:
-      'From research to rollout, Bilhuda orchestrated the experience with empathy, precision and a sharp eye for detail.',
-    name: 'Sasha Patel',
-    title: 'Chief Experience Officer, Halo Health'
+      'Reduced POSTUREBLOOM onboarding drop-off by 60% with accessibility-first flows, contextual inquiry, and data-rich visual storytelling.',
+    name: 'POSTUREBLOOM',
+    title: 'Product Designer & UX Lead'
   }
 ]
 
@@ -138,26 +149,26 @@ const FLOATING_ORBS = [
   {
     id: 1,
     size: 420,
-    top: '10%',
-    left: '8%',
+    top: '8%',
+    left: '6%',
     background:
-      'radial-gradient(circle at 30% 30%, rgba(255,214,94,0.55), transparent 60%)'
+      'radial-gradient(circle at 30% 30%, rgba(255,64,172,0.6), transparent 65%)'
   },
   {
     id: 2,
-    size: 520,
-    top: '55%',
-    left: '70%',
+    size: 560,
+    top: '52%',
+    left: '72%',
     background:
-      'radial-gradient(circle at 70% 40%, rgba(120,208,255,0.45), transparent 65%)'
+      'radial-gradient(circle at 70% 40%, rgba(60,245,255,0.5), transparent 68%)'
   },
   {
     id: 3,
-    size: 360,
-    top: '75%',
-    left: '15%',
+    size: 380,
+    top: '78%',
+    left: '18%',
     background:
-      'radial-gradient(circle at 50% 50%, rgba(255,140,222,0.45), transparent 60%)'
+      'radial-gradient(circle at 50% 50%, rgba(158,118,255,0.5), transparent 62%)'
   }
 ]
 
@@ -316,13 +327,13 @@ export default function Home() {
             href="#top"
             className="font-mono text-xs tracking-[0.3em] uppercase"
             whileHover={{ x: 4 }}
-            onMouseEnter={() => setCursorLabel('Home')}
+            onMouseEnter={() => setCursorLabel('Scroll to top')}
             onMouseLeave={resetCursor}
           >
             Bilhuda
           </motion.a>
           <span className="nav-divider" />
-          <span className="text-xs uppercase opacity-60">Experience Architecture</span>
+          <span className="text-xs uppercase opacity-60">UX Designer & Systems Strategist</span>
         </div>
         <div className="hidden md:flex items-center gap-8">
           {NAV_ITEMS.map((item) => (
@@ -344,7 +355,7 @@ export default function Home() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.96 }}
             onClick={toggleAboutModal}
-            onMouseEnter={() => setCursorLabel('About')}
+            onMouseEnter={() => setCursorLabel('About Bilhuda')}
             onMouseLeave={resetCursor}
           >
             About
@@ -354,7 +365,7 @@ export default function Home() {
             onClick={() => setIsDarkMode((prev) => !prev)}
             whileHover={{ rotate: 10 }}
             whileTap={{ scale: 0.95 }}
-            onMouseEnter={() => setCursorLabel(isDarkMode ? 'Light' : 'Dark')}
+            onMouseEnter={() => setCursorLabel(isDarkMode ? 'Light mode' : 'Dark mode')}
             onMouseLeave={resetCursor}
             aria-label="Toggle theme"
           >
@@ -412,13 +423,16 @@ export default function Home() {
                 transition={{ delay: 0.2, duration: 0.6, ease: 'easeOut' }}
               >
                 <span className="badge-dot" />
-                Designing for emotion and clarity
+                Designing equitable, research-led experiences
               </motion.span>
               <motion.h1
                 className="text-6xl md:text-7xl xl:text-8xl font-bold leading-tight gradient-text"
                 style={{ transform: `translateY(${refinedScroll * -14}px)` }}
               >
-                BILHUDA PRAMANA
+                BILHUDA PRAMANA HASIBUAN
+                <span className="block text-2xl md:text-3xl font-normal tracking-[0.4em] mt-4">
+                  DUAL-DEGREE UX PORTFOLIO
+                </span>
               </motion.h1>
               <motion.p
                 className="text-xl md:text-2xl max-w-2xl leading-relaxed text-muted"
@@ -426,30 +440,31 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4, duration: 0.6, ease: 'easeOut' }}
               >
-                A UX <span className="word-morph">{WORDS[currentWordIndex]}</span> crafting holistic
-                ecosystems where technology disappears and the story takes center stage. Every
-                pixel, gesture and transition is considered for resonance.
+                A <span className="word-morph">{WORDS[currentWordIndex]}</span> with dual bachelor&apos;s degrees in Computer
+                Science (Universitas Indonesia) and UX Design (The University of Queensland).
+                I blend research depth, service design, and operational leadership to launch
+                products that feel intuitive, inclusive, and ready for scale.
               </motion.p>
               <div className="flex flex-wrap gap-4">
                 <motion.a
-                  href="#work"
+                  href="#projects"
                   className="cta-button"
                   whileHover={{ scale: 1.05, y: -4 }}
                   whileTap={{ scale: 0.96 }}
-                  onMouseEnter={() => setCursorLabel('Explore work')}
+                  onMouseEnter={() => setCursorLabel('View case studies')}
                   onMouseLeave={resetCursor}
                 >
                   Explore the work
                 </motion.a>
                 <motion.a
-                  href="mailto:hello@bilhuda.com"
+                  href="https://www.linkedin.com/in/bilhuda-hasibuan"
                   className="ghost-button"
                   whileHover={{ scale: 1.05, y: -4 }}
                   whileTap={{ scale: 0.96 }}
-                  onMouseEnter={() => setCursorLabel('Email me')}
+                  onMouseEnter={() => setCursorLabel('Connect on LinkedIn')}
                   onMouseLeave={resetCursor}
                 >
-                  Start a project
+                  Connect on LinkedIn
                 </motion.a>
               </div>
               <div className="grid gap-6 md:grid-cols-3">
@@ -481,13 +496,13 @@ export default function Home() {
               <div className="hero-grid" aria-hidden />
               <div className="relative space-y-8">
                 <div className="flex items-center justify-between">
-                  <p className="text-xs uppercase tracking-[0.4em] text-muted">Signature process</p>
+                  <p className="text-xs uppercase tracking-[0.4em] text-muted">Design workflow</p>
                   <motion.span
                     className="accent-pill"
                     animate={{ opacity: [0.4, 1, 0.4] }}
                     transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
                   >
-                    Always evolving
+                    Latest iteration ready
                   </motion.span>
                 </div>
                 <div className="space-y-5">
@@ -509,16 +524,22 @@ export default function Home() {
                     </motion.div>
                   ))}
                 </div>
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-4 md:grid-cols-3">
                   <div className="insight-card">
                     <p className="text-xs uppercase tracking-[0.4em] text-muted">Currently</p>
                     <p className="text-base font-medium">
-                      Designing next-gen retail at <span className="highlight-text">Nusantara</span>
+                      Leading shifts at <span className="highlight-text">Domino&apos;s Queen St</span>
                     </p>
                   </div>
                   <div className="insight-card">
-                    <p className="text-xs uppercase tracking-[0.4em] text-muted">Availability</p>
-                    <p className="text-base font-medium">Open for select collaborations</p>
+                    <p className="text-xs uppercase tracking-[0.4em] text-muted">Location</p>
+                    <p className="text-base font-medium">East Brisbane, Queensland</p>
+                  </div>
+                  <div className="insight-card">
+                    <p className="text-xs uppercase tracking-[0.4em] text-muted">Open to</p>
+                    <p className="text-base font-medium">
+                      UX, research & customer service opportunities
+                    </p>
                   </div>
                 </div>
               </div>
@@ -527,7 +548,7 @@ export default function Home() {
         </motion.section>
 
         <motion.section
-          id="work"
+          id="projects"
           className="container mx-auto px-4 space-y-12"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -535,11 +556,11 @@ export default function Home() {
           transition={{ duration: 0.7, ease: 'easeOut' }}
         >
           <div className="section-heading">
-            <span className="section-eyebrow">Selected Work</span>
-            <h2 className="section-title">Flagship experiences crafted with intention</h2>
+            <span className="section-eyebrow">Case studies</span>
+            <h2 className="section-title">Human-centered products that blend rigor and heart</h2>
             <p className="section-description">
-              A collection of multidisciplinary stories where research, design systems and
-              motion converge to create signature product moments.
+              Research-backed, industry-collaborative projects that move the metrics and honor the
+              people behind them.
             </p>
           </div>
           <div className="grid gap-10 xl:grid-cols-2">
@@ -577,7 +598,7 @@ export default function Home() {
                 <p className="project-description">{project.description}</p>
                 <div className="project-meta">
                   <span>{project.role}</span>
-                  <span>Experience leadership</span>
+                  <span>{project.context}</span>
                 </div>
                 <div className="flex flex-wrap gap-3 pt-6">
                   {project.tags.map((tag) => (
@@ -598,7 +619,7 @@ export default function Home() {
         </motion.section>
 
         <motion.section
-          id="about"
+          id="experience"
           className="container mx-auto px-4 space-y-12"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -607,10 +628,10 @@ export default function Home() {
         >
           <div className="section-heading">
             <span className="section-eyebrow">Experience</span>
-            <h2 className="section-title">Designing with empathy, rigor and poetry</h2>
+            <h2 className="section-title">Bridging research, operations, and large-scale delivery</h2>
             <p className="section-description">
-              A journey across industries shaping teams, systems and rituals that keep humans at
-              the heart of ambitious products.
+              Leadership roles across hospitality, logistics, and tech festivals built my ability to
+              orchestrate people, data, and environments for exceptional service and design outcomes.
             </p>
           </div>
           <div className="timeline">
@@ -645,7 +666,7 @@ export default function Home() {
         </motion.section>
 
         <motion.section
-          id="testimonials"
+          id="impact"
           className="container mx-auto px-4 space-y-12"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -653,11 +674,11 @@ export default function Home() {
           transition={{ duration: 0.7, ease: 'easeOut' }}
         >
           <div className="section-heading">
-            <span className="section-eyebrow">Kind Words</span>
-            <h2 className="section-title">What partners feel working together</h2>
+            <span className="section-eyebrow">Impact highlights</span>
+            <h2 className="section-title">Outcome-driven stories from recent collaborations</h2>
             <p className="section-description">
-              Partnerships rooted in trust, clarity and momentum. Here is how collaborators
-              describe the journey.
+              Quantifiable wins across product, service, and operations projects — each grounded in
+              human insight and rigorous experimentation.
             </p>
           </div>
           <div className="grid gap-6 md:grid-cols-3">
@@ -693,48 +714,39 @@ export default function Home() {
           <motion.div
             className="cta-card glass-panel"
             whileHover={{ scale: 1.01 }}
-            onMouseEnter={() => setCursorLabel('Collaborate')}
+            onMouseEnter={() => setCursorLabel('Reach out')}
             onMouseLeave={resetCursor}
           >
             <div className="space-y-6">
-              <span className="section-eyebrow">Let’s build the future</span>
-              <h2 className="section-title">Ready to craft a flagship experience together?</h2>
+              <span className="section-eyebrow">Let&apos;s collaborate</span>
+              <h2 className="section-title">Designing inclusive, data-informed experiences together</h2>
               <p className="section-description">
-                I partner with teams who value craft, measurable impact and long-term product
-                health. Let’s orchestrate the next chapter of your product.
+                I bring research depth, operational excellence, and service design thinking to teams
+                who care about accessibility and measurable impact. Let&apos;s explore how I can
+                support your next product or customer journey.
               </p>
             </div>
             <div className="flex flex-col gap-4 md:items-end">
               <motion.a
-                href="mailto:hello@bilhuda.com"
+                href="https://www.linkedin.com/in/bilhuda-hasibuan"
                 className="cta-button"
                 whileHover={{ scale: 1.05, y: -4 }}
                 whileTap={{ scale: 0.96 }}
-                onMouseEnter={() => setCursorLabel('Email me')}
+                onMouseEnter={() => setCursorLabel('Message on LinkedIn')}
                 onMouseLeave={resetCursor}
               >
-                hello@bilhuda.com
+                Message on LinkedIn
               </motion.a>
-              <div className="flex gap-4">
-                {['LinkedIn', 'Twitter', 'Read.cv'].map((item) => (
-                  <motion.a
-                    key={item}
-                    href="#"
-                    className="ghost-link"
-                    whileHover={{ y: -4 }}
-                    onMouseEnter={() => setCursorLabel(item)}
-                    onMouseLeave={resetCursor}
-                  >
-                    {item}
-                  </motion.a>
-                ))}
-              </div>
+              <p className="text-sm text-muted md:text-right max-w-sm">
+                Prefer email or a resume PDF? Send a note via LinkedIn and I&apos;ll share direct
+                contact details within one business day.
+              </p>
             </div>
           </motion.div>
         </motion.section>
 
         <footer className="container mx-auto px-4 text-sm text-muted text-center pt-12">
-          © {new Date().getFullYear()} Bilhuda Pramana. Crafted with intention.
+          © {new Date().getFullYear()} Bilhuda Pramana Hasibuan. Crafted with empathy & iteration.
         </footer>
       </main>
 
@@ -754,24 +766,30 @@ export default function Home() {
               transition={{ type: 'spring', damping: 18, stiffness: 180 }}
             >
               <div className="flex items-start justify-between gap-6">
-                <div className="space-y-4">
-                  <h2 className="text-3xl font-semibold">More about Bilhuda</h2>
+              <div className="space-y-4">
+                  <h2 className="text-3xl font-semibold">About Bilhuda</h2>
                   <p className="text-base leading-relaxed text-muted">
-                    I am a UX designer obsessed with the invisible choreography of great products.
-                    Psychology, sound design and architecture influence how I craft emotion into
-                    every interaction. Beyond the pixels, I facilitate rituals that keep teams
-                    aligned, curious and kind.
+                    I&apos;m a dual-degree graduate (Computer Science — Universitas Indonesia & UX
+                    Design — The University of Queensland) with a passion for crafting inclusive
+                    digital experiences. My background spans UX research, service design, and
+                    operational leadership for large-scale events and fast-paced retail teams.
                   </p>
                   <p className="text-base leading-relaxed text-muted">
-                    Outside of design you will find me sketching cityscapes, collecting iconic
-                    chairs and exploring volcanic trails across Indonesia.
+                    I thrive at the intersection of qualitative insight and quantitative impact —
+                    whether that&apos;s scaling a design system, redesigning export operations, or
+                    guiding frontline teams through exceptional customer service moments.
                   </p>
                   <div className="modal-skills">
-                    {['UX Design', 'Design Strategy', 'Motion Direction', 'Research Ops', 'Figma', 'Prototyping'].map(
-                      (skill) => (
-                        <span key={skill}>{skill}</span>
-                      )
-                    )}
+                    {[
+                      'UX Research',
+                      'Service Design',
+                      'Product Strategy',
+                      'Accessibility',
+                      'Data Visualization',
+                      'Operations Leadership'
+                    ].map((skill) => (
+                      <span key={skill}>{skill}</span>
+                    ))}
                   </div>
                 </div>
                 <motion.button
@@ -779,9 +797,9 @@ export default function Home() {
                   onClick={toggleAboutModal}
                   whileHover={{ rotate: 90 }}
                   whileTap={{ scale: 0.9 }}
-                  onMouseEnter={() => setCursorLabel('Close')}
+                  onMouseEnter={() => setCursorLabel('Close about')}
                   onMouseLeave={resetCursor}
-                  aria-label="Close modal"
+                  aria-label="Close about dialog"
                 >
                   ×
                 </motion.button>
@@ -806,13 +824,13 @@ export default function Home() {
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
           >
-            <span className="text-xs uppercase tracking-[0.4em] opacity-60">Impact</span>
+            <span className="text-xs uppercase tracking-[0.4em] opacity-60">Key impact</span>
             <p className="text-sm font-semibold">{activeProject.impact}</p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <div className="keyboard-hint">Press Ctrl+D for dark mode · Ctrl+A for the story</div>
+      <div className="keyboard-hint">Press Ctrl+D to toggle dark mode · Ctrl+A to open the about panel</div>
     </>
   )
 }

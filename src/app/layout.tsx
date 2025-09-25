@@ -10,9 +10,9 @@ const spaceMono = Space_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Bilhuda Pramana — Experience Architect',
+  title: 'Bilhuda Pramana Hasibuan — UX Designer & Operations Strategist',
   description:
-    'Portfolio of Bilhuda Pramana, a UX designer crafting flagship digital experiences with emotion, rigor and measurable impact.'
+    'Dual-degree UX professional blending research, service design, and operational leadership across digital products, logistics, and customer experience.'
 }
 
 export default function RootLayout({
