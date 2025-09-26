@@ -1,6 +1,15 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import {
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+  useScroll,
+  useSpring,
+  useTransform
+} from 'framer-motion'
+import { useRef, useState, type ComponentProps, type PointerEvent, type ReactNode } from 'react'
+import type { MotionProps, MotionValue } from 'framer-motion'
 
 const navItems = [
   { label: 'Overview', target: 'overview' },
@@ -183,15 +192,229 @@ const staggerChildren = {
   }
 }
 
-export default function Home() {
-  return (
-    <div className="relative isolate min-h-screen overflow-hidden bg-[#020617] text-slate-100">
-      <div className="pointer-events-none absolute -top-40 left-1/2 h-[38rem] w-[38rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,_rgba(59,130,246,0.28),_transparent_70%)] blur-3xl" />
-      <div className="pointer-events-none absolute top-40 -left-32 h-[34rem] w-[34rem] rounded-full bg-[radial-gradient(circle_at_center,_rgba(251,191,36,0.2),_transparent_72%)] blur-3xl" />
-      <div className="pointer-events-none absolute bottom-[-18rem] right-[-12rem] h-[40rem] w-[40rem] rounded-full bg-[radial-gradient(circle_at_center,_rgba(244,114,182,0.22),_transparent_70%)] blur-3xl" />
-      <div className="pointer-events-none absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'160\' height=\'160\' viewBox=\'0 0 160 160\'%3E%3Crect width=\'160\' height=\'160\' fill=\'%2300000014\'/%3E%3C/svg%3E')] opacity-[0.15]" />
+const subtleStagger = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.12,
+      delayChildren: 0.04
+    }
+  }
+}
 
-      <header className="sticky top-0 z-30 border-b border-white/10 bg-[#030818]/70 backdrop-blur-xl">
+function cn(...classes: Array<string | false | null | undefined>) {
+  return classes.filter(Boolean).join(' ')
+}
+
+type MagneticLinkProps = ComponentProps<typeof motion.a>
+
+function MagneticLink({ className, style, children, ...props }: MagneticLinkProps) {
+  const ref = useRef<HTMLAnchorElement>(null)
+  const x = useMotionValue(0)
+  const y = useMotionValue(0)
+  const translateX = useSpring(x, { stiffness: 260, damping: 20, mass: 0.6 })
+  const translateY = useSpring(y, { stiffness: 260, damping: 20, mass: 0.6 })
+
+  const handlePointerMove = (event: PointerEvent<HTMLAnchorElement>) => {
+    const element = ref.current
+    if (!element) return
+    const rect = element.getBoundingClientRect()
+    const relativeX = ((event.clientX - rect.left) / rect.width - 0.5) * 16
+    const relativeY = ((event.clientY - rect.top) / rect.height - 0.5) * 16
+    x.set(relativeX)
+    y.set(relativeY)
+    props.onPointerMove?.(event)
+  }
+
+  const handlePointerLeave = (event: PointerEvent<HTMLAnchorElement>) => {
+    x.set(0)
+    y.set(0)
+    props.onPointerLeave?.(event)
+  }
+
+  return (
+    <motion.a
+      {...props}
+      ref={ref}
+      className={className}
+      style={style ? { ...style, x: translateX, y: translateY } : { x: translateX, y: translateY }}
+      onPointerMove={handlePointerMove}
+      onPointerLeave={handlePointerLeave}
+    >
+      {children}
+    </motion.a>
+  )
+}
+
+type TiltCardProps = MotionProps & {
+  children: ReactNode
+  className?: string
+  intensity?: number
+}
+
+function TiltCard({ children, className, intensity = 10, style, ...props }: TiltCardProps) {
+  const ref = useRef<HTMLDivElement>(null)
+  const x = useMotionValue(0)
+  const y = useMotionValue(0)
+
+  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [intensity, -intensity]), {
+    stiffness: 120,
+    damping: 18,
+    mass: 0.6
+  })
+  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-intensity, intensity]), {
+    stiffness: 120,
+    damping: 18,
+    mass: 0.6
+  })
+  const translateX = useSpring(useTransform(x, (value) => value * 18), {
+    stiffness: 200,
+    damping: 20,
+    mass: 0.6
+  })
+  const translateY = useSpring(useTransform(y, (value) => value * 18), {
+    stiffness: 200,
+    damping: 20,
+    mass: 0.6
+  })
+  const pointerX = useTransform(x, (value) => (value + 0.5) * 100)
+  const pointerY = useTransform(y, (value) => (value + 0.5) * 100)
+  const glow = useMotionTemplate`radial-gradient(320px circle at ${pointerX}% ${pointerY}%, rgba(56,189,248,0.18), transparent 70%)`
+
+  const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    const element = ref.current
+    if (!element) return
+    const rect = element.getBoundingClientRect()
+    const relativeX = (event.clientX - rect.left) / rect.width - 0.5
+    const relativeY = (event.clientY - rect.top) / rect.height - 0.5
+    x.set(relativeX)
+    y.set(relativeY)
+    props.onPointerMove?.(event)
+  }
+
+  const handlePointerLeave = (event: PointerEvent<HTMLDivElement>) => {
+    x.set(0)
+    y.set(0)
+    props.onPointerLeave?.(event)
+  }
+
+  return (
+    <motion.div
+      {...props}
+      ref={ref}
+      className={cn('relative will-change-transform', className)}
+      style={style
+        ? {
+            ...style,
+            rotateX,
+            rotateY,
+            x: translateX,
+            y: translateY,
+            transformPerspective: 1200
+          }
+        : {
+            rotateX,
+            rotateY,
+            x: translateX,
+            y: translateY,
+            transformPerspective: 1200
+          }}
+      onPointerMove={handlePointerMove}
+      onPointerLeave={handlePointerLeave}
+    >
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        style={{ background: glow }}
+      />
+      {children}
+    </motion.div>
+  )
+}
+
+function ScrollProgressBar() {
+  const { scrollYProgress } = useScroll()
+  const scaleX = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.2 })
+
+  return (
+    <motion.div
+      className="fixed inset-x-0 top-0 z-[60] h-1 origin-left bg-gradient-to-r from-sky-400 via-emerald-300 to-amber-300"
+      style={{ scaleX }}
+    />
+  )
+}
+
+function Spotlight({ x, y, active }: { x: MotionValue<number>; y: MotionValue<number>; active: boolean }) {
+  const opacity = useSpring(active ? 1 : 0, { stiffness: 120, damping: 30 })
+  const spotlight = useMotionTemplate`radial-gradient(520px circle at ${x}px ${y}px, rgba(56,189,248,0.28), transparent 65%)`
+
+  return (
+    <motion.div
+      aria-hidden
+      className="pointer-events-none absolute inset-0 z-0 mix-blend-screen"
+      style={{ opacity, backgroundImage: spotlight }}
+    />
+  )
+}
+
+function AuroraBackground() {
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+      <motion.div
+        className="absolute left-1/2 top-[-30%] h-[46rem] w-[46rem] -translate-x-1/2 rounded-full bg-sky-500/20 blur-3xl"
+        animate={{ rotate: [0, 10, -8, 0], scale: [1, 1.08, 0.96, 1] }}
+        transition={{ duration: 24, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      <motion.div
+        className="absolute -left-32 top-1/4 h-[38rem] w-[38rem] rounded-full bg-emerald-400/14 blur-3xl"
+        animate={{
+          x: [-20, 20, -30, 0],
+          y: [0, -30, 20, 0],
+          scale: [1, 1.04, 0.98, 1]
+        }}
+        transition={{ duration: 28, repeat: Infinity, ease: 'easeInOut', delay: 4 }}
+      />
+      <motion.div
+        className="absolute bottom-[-26%] right-[-18%] h-[44rem] w-[44rem] rounded-full bg-pink-400/16 blur-3xl"
+        animate={{ rotate: [0, -12, 6, 0], scale: [1, 0.94, 1.04, 1] }}
+        transition={{ duration: 32, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
+      />
+      <motion.div
+        className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'160\' height=\'160\' viewBox=\'0 0 160 160\'%3E%3Cpath d=\'M0 160h160V0\' fill=\'none\' stroke=\'rgba(148,163,184,0.08)\' stroke-width=\'0.5\'/%3E%3C/svg%3E')] opacity-[0.12]"
+        animate={{ backgroundPosition: ['0px 0px', '80px 80px'] }}
+        transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
+      />
+    </div>
+  )
+}
+
+export default function Home() {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const cursorX = useMotionValue(0)
+  const cursorY = useMotionValue(0)
+  const [spotlightActive, setSpotlightActive] = useState(false)
+
+  const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    const element = containerRef.current
+    if (!element) return
+    const rect = element.getBoundingClientRect()
+    cursorX.set(event.clientX - rect.left)
+    cursorY.set(event.clientY - rect.top)
+  }
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative isolate min-h-screen overflow-hidden bg-[#020617] text-slate-100"
+      onPointerMove={handlePointerMove}
+      onPointerEnter={() => setSpotlightActive(true)}
+      onPointerLeave={() => setSpotlightActive(false)}
+    >
+      <ScrollProgressBar />
+      <AuroraBackground />
+      <Spotlight x={cursorX} y={cursorY} active={spotlightActive} />
+
+      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#030818]/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-5">
           <div className="flex items-center gap-3">
             <span className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100/10 text-sm font-semibold text-slate-200">
@@ -204,24 +427,25 @@ export default function Home() {
           </div>
           <nav className="hidden items-center gap-8 text-sm font-medium text-slate-300 md:flex">
             {navItems.map((item) => (
-              <motion.a
+              <MagneticLink
                 key={item.target}
                 href={`#${item.target}`}
-                className="transition hover:text-sky-200"
-                whileHover={{ y: -3 }}
+                className="group relative inline-flex items-center transition hover:text-sky-200"
+                whileHover={{ scale: 1.02 }}
               >
                 {item.label}
-              </motion.a>
+                <span className="pointer-events-none absolute inset-x-0 -bottom-2 block h-0.5 scale-x-0 rounded-full bg-gradient-to-r from-sky-400 via-emerald-300 to-amber-300 opacity-0 transition-all duration-300 group-hover:scale-x-100 group-hover:opacity-100" />
+              </MagneticLink>
             ))}
           </nav>
-          <motion.a
+          <MagneticLink
             href="#contact"
             className="hidden rounded-full bg-sky-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-sky-400 md:inline-flex"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
             Collaborate
-          </motion.a>
+          </MagneticLink>
           <button
             className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-slate-300 md:hidden"
             aria-label="Jump to navigation"
@@ -238,7 +462,7 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="relative z-10 mx-auto flex max-w-6xl flex-col gap-32 px-6 pb-24 pt-20" id="overview">
+      <main className="relative z-10 mx-auto flex max-w-6xl flex-col gap-32 px-6 pb-24 pt-24" id="overview">
         <section className="space-y-16">
           <motion.div
             className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.4em] text-slate-400"
@@ -275,9 +499,10 @@ export default function Home() {
             initial="hidden"
             animate="visible"
           >
-            <motion.div
+            <TiltCard
               variants={fadeUp}
-              className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl"
+              className="group rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl"
+              intensity={7}
             >
               <div className="flex flex-wrap items-center gap-4 text-sm text-slate-300">
                 <span className="inline-flex items-center gap-2 rounded-full bg-emerald-400/20 px-3 py-1 text-emerald-200">
@@ -299,10 +524,11 @@ export default function Home() {
                   </span>
                 ))}
               </div>
-            </motion.div>
-            <motion.div
+            </TiltCard>
+            <TiltCard
               variants={fadeUp}
-              className="flex flex-col justify-between gap-6 rounded-3xl border border-white/10 bg-gradient-to-br from-slate-900/80 via-slate-900/40 to-slate-800/30 p-8"
+              className="group flex flex-col justify-between gap-6 rounded-3xl border border-white/10 bg-gradient-to-br from-slate-900/80 via-slate-900/40 to-slate-800/30 p-8"
+              intensity={6}
             >
               <div>
                 <h2 className="text-base font-semibold text-slate-100">Signature skills</h2>
@@ -317,28 +543,24 @@ export default function Home() {
                   </span>
                 ))}
               </div>
-            </motion.div>
+            </TiltCard>
           </motion.div>
 
-          <motion.div
-            className="grid gap-4 md:grid-cols-2"
-            variants={staggerChildren}
-            initial="hidden"
-            animate="visible"
-          >
+          <motion.div className="grid gap-4 md:grid-cols-2" variants={staggerChildren} initial="hidden" animate="visible">
             {heroHighlights.map((item) => (
-              <motion.article
+              <TiltCard
                 key={item.label}
                 variants={fadeUp}
-                className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl transition hover:border-sky-300/40"
+                className="group overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl transition hover:border-sky-300/40"
+                intensity={8}
               >
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-medium uppercase tracking-[0.4em] text-slate-400">{item.label}</p>
                   <span className="text-sm font-semibold text-sky-200">{item.value}</span>
                 </div>
                 <p className="mt-4 text-base text-slate-300">{item.description}</p>
-                <div className="absolute inset-x-0 bottom-0 h-1 w-full bg-gradient-to-r from-transparent via-sky-300/40 to-transparent opacity-0 transition group-hover:opacity-100" />
-              </motion.article>
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1 w-full bg-gradient-to-r from-transparent via-sky-300/50 to-transparent opacity-0 transition group-hover:opacity-100" />
+              </TiltCard>
             ))}
           </motion.div>
         </section>
@@ -357,14 +579,15 @@ export default function Home() {
 
           <div className="space-y-10">
             {experiences.map((experience, index) => (
-              <motion.article
+              <TiltCard
                 key={experience.company}
                 variants={fadeUp}
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.4 }}
                 transition={{ delay: index * 0.1, duration: 0.6 }}
-                className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl"
+                className="group rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl"
+                intensity={6}
               >
                 <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                   <div>
@@ -385,7 +608,7 @@ export default function Home() {
                     </li>
                   ))}
                 </ul>
-              </motion.article>
+              </TiltCard>
             ))}
           </div>
         </section>
@@ -400,13 +623,14 @@ export default function Home() {
           </motion.div>
           <div className="grid gap-8 md:grid-cols-2">
             {projects.map((project) => (
-              <motion.article
+              <TiltCard
                 key={project.name}
                 variants={fadeUp}
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.3 }}
-                className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/8 via-white/5 to-white/10 p-7 backdrop-blur-xl"
+                className="group relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/8 via-white/5 to-white/10 p-7 backdrop-blur-xl"
+                intensity={7}
               >
                 <div className="flex items-center justify-between gap-4">
                   <div>
@@ -424,7 +648,7 @@ export default function Home() {
                   ))}
                 </div>
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-sky-400/0 via-sky-400/60 to-sky-400/0" />
-              </motion.article>
+              </TiltCard>
             ))}
           </div>
         </section>
@@ -439,19 +663,24 @@ export default function Home() {
           </motion.div>
           <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr]">
             <motion.div
-              variants={fadeUp}
+              variants={subtleStagger}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.3 }}
               className="space-y-6"
             >
               {education.map((item) => (
-                <article key={item.school} className="rounded-3xl border border-white/10 bg-white/5 p-7 backdrop-blur-xl">
+                <TiltCard
+                  key={item.school}
+                  variants={fadeUp}
+                  className="group rounded-3xl border border-white/10 bg-white/5 p-7 backdrop-blur-xl"
+                  intensity={5}
+                >
                   <p className="text-sm uppercase tracking-[0.3em] text-slate-400">{item.period}</p>
                   <h3 className="mt-3 text-xl font-semibold text-slate-100">{item.school}</h3>
                   <p className="text-base text-slate-300">{item.programme}</p>
                   <p className="mt-4 text-sm text-slate-300">{item.details}</p>
-                </article>
+                </TiltCard>
               ))}
             </motion.div>
             <motion.div
@@ -459,18 +688,23 @@ export default function Home() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.3 }}
-              className="rounded-3xl border border-white/10 bg-gradient-to-br from-slate-900/70 via-slate-900/40 to-slate-800/30 p-7 backdrop-blur-xl"
+              className="rounded-3xl"
             >
-              <h3 className="text-lg font-semibold text-slate-100">Recent certifications</h3>
-              <ul className="mt-6 space-y-5 text-sm text-slate-300">
-                {certifications.map((cert) => (
-                  <li key={cert.name} className="space-y-1">
-                    <p className="font-medium text-slate-100">{cert.name}</p>
-                    <p className="text-slate-400">{cert.issuer} · Issued {cert.issued}</p>
-                    <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Credential ID {cert.credentialId}</p>
-                  </li>
-                ))}
-              </ul>
+              <TiltCard
+                className="group h-full rounded-3xl border border-white/10 bg-gradient-to-br from-slate-900/70 via-slate-900/40 to-slate-800/30 p-7 backdrop-blur-xl"
+                intensity={4}
+              >
+                <h3 className="text-lg font-semibold text-slate-100">Recent certifications</h3>
+                <ul className="mt-6 space-y-5 text-sm text-slate-300">
+                  {certifications.map((cert) => (
+                    <li key={cert.name} className="space-y-1">
+                      <p className="font-medium text-slate-100">{cert.name}</p>
+                      <p className="text-slate-400">{cert.issuer} · Issued {cert.issued}</p>
+                      <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Credential ID {cert.credentialId}</p>
+                    </li>
+                  ))}
+                </ul>
+              </TiltCard>
             </motion.div>
           </div>
         </section>
@@ -483,12 +717,13 @@ export default function Home() {
               Reach out to explore UX strategy, service design, research partnerships or operational excellence engagements. Bilhuda thrives on collaborative missions that blend craft, data and compassion.
             </p>
           </motion.div>
-          <motion.div
+          <TiltCard
             variants={fadeUp}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
-            className="flex flex-col gap-6 rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl md:flex-row md:items-center md:justify-between"
+            className="group flex flex-col gap-6 rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl md:flex-row md:items-center md:justify-between"
+            intensity={6}
           >
             <div>
               <h3 className="text-lg font-semibold text-slate-100">Start the conversation</h3>
@@ -498,7 +733,7 @@ export default function Home() {
             </div>
             <div className="flex flex-wrap items-center gap-4">
               {contactChannels.map((channel) => (
-                <motion.a
+                <MagneticLink
                   key={channel.label}
                   href={channel.href}
                   target={channel.href.startsWith('http') ? '_blank' : undefined}
@@ -508,10 +743,10 @@ export default function Home() {
                   whileTap={{ scale: 0.97 }}
                 >
                   {channel.label}
-                </motion.a>
+                </MagneticLink>
               ))}
             </div>
-          </motion.div>
+          </TiltCard>
         </section>
       </main>
 
