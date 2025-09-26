@@ -9,7 +9,7 @@ import {
   useTransform
 } from 'framer-motion'
 import { useRef, useState, type ComponentProps, type PointerEvent, type ReactNode } from 'react'
-import type { MotionProps, MotionValue } from 'framer-motion'
+import type { MotionValue } from 'framer-motion'
 
 const navItems = [
   { label: 'Overview', target: 'overview' },
@@ -246,9 +246,8 @@ function MagneticLink({ className, style, children, ...props }: MagneticLinkProp
   )
 }
 
-type TiltCardProps = MotionProps & {
+type TiltCardProps = Omit<ComponentProps<typeof motion.div>, 'children'> & {
   children: ReactNode
-  className?: string
   intensity?: number
 }
 
